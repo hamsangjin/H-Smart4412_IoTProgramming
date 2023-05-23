@@ -1,4 +1,4 @@
 # Indian Poker Game
----
-***
----
+=
+*
+=
