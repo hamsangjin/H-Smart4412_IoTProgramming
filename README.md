@@ -1,2 +1,1 @@
-# Indian Poker Game
-=
+# IoT 프로그래밍 4조 인디언 포커 게임
