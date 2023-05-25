@@ -40,7 +40,7 @@ int looptime(int s, int end) {
 
     fnd_num[0] = Time_Table[0];
     fnd_num[1] = Time_Table[0];
-    fnd_num[2] = Time_Table[9 - s];
+    fnd_num[2] = Time_Table[10 - s];
     fnd_num[3] = Time_Table[end - start];
 
     write(fnds, &fnd_num, sizeof(fnd_num));
