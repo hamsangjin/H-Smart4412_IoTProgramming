@@ -251,6 +251,17 @@ void start(int* cards1, int* cards2){
     int com_card = cards1[i];
     int user_card = cards2[i];
     
+    dot_mtx = open(dot, O_RDWR);
+    if (dot_mtx < 0){
+    	printf("Cannot open dot device\n”);
+    	Return 0;
+    }
+   
+    write(dot_d, &deck[com_card-1],sizeof(deck[com_card-1]));
+    sleep(20);
+
+    
+    
     
     
     sprintf(round_clcd, "    ROUND  %d         START!     ", i+1);
@@ -270,13 +281,28 @@ void start(int* cards1, int* cards2){
         com_score++;
         PRINT("     PLAYER           LOSE      "); usleep(2000000);
     }
+    
+    close(dot_mtx);
+    
+    
 
     // 스코어 공개
     sprintf(score_clcd, "PLAYER SCORE = %d COM  SCORE = %d ", user_score, com_score);
     PRINT(score_clcd);  usleep(2000000);
 
     //사용자 카드 공개
-    // user_dot_matrix(user_card);
+    user_dot_matrix = open(dot, O_RDWR);
+    if (dot_mtx < 0){
+    	printf("Cannot open dot device\n”);
+    	Return 0;
+    }
+   
+    write(dot_d, &deck[user_card-1],sizeof(deck[user_card-1]));
+    sleep(5);
+    close(user_dot_matrix)
+
+    
+    
 
     if(user_score>=7){
       PRINT("   GAME CLEAR      PLAYER WIN   ");   usleep(2000000);
@@ -394,9 +420,9 @@ int dipsw_get_with_timer(int t_second)
 		int s = i / 10;
 		int ss = i % 10;
 		fnd_num[0] = Time_Table[0];
-    	fnd_num[1] = Time_Table[0];
-    	fnd_num[2] = Time_Table[s];
-    	fnd_num[3] = Time_Table[ss];
+    		fnd_num[1] = Time_Table[0];
+    		fnd_num[2] = Time_Table[s];
+    		fnd_num[3] = Time_Table[ss];
 		write(fnds, &fnd_num, sizeof(fnd_num));
 		printf("%d초\n",i);
 		
