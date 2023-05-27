@@ -231,7 +231,7 @@ int tactsw_get_with_timer(int t_second){
 		return 0;
 	}
 	
-	int i,j;
+	int i=10,j=100,s=0,ss=0; 
 	for(i = t_second; i>-1;i--){
 		for(j = 100; j>0;j--){
 			usleep(10000); //0.01 초 쉬기 
@@ -260,8 +260,8 @@ int tactsw_get_with_timer(int t_second){
 				}
 		
 		}//1초 지남 = 0.01초*100번 
-		int s = i / 10;
-		int ss = i % 10;
+		s = i / 10;
+		ss = i % 10;
 		fnd_num[0] = Time_Table[0];
     	fnd_num[1] = Time_Table[0];
     	fnd_num[2] = Time_Table[s];
@@ -292,6 +292,11 @@ int dipsw_get_with_timer(int t_second)
 		printf("dip open error");
 		return 0;
 	}
+	if((fnds = open(fnd,O_RDWR)) <0){
+		printf("fnd open error");
+		return 0;
+		}
+	
 	
 	int i,j;
 	for(i = t_second; i>-1;i--){
@@ -299,7 +304,7 @@ int dipsw_get_with_timer(int t_second)
 			usleep(10000); //0.01 초 쉬기 
             read(dipsw, &d, sizeof(d));
             //printf("입력중 %u \n", b);
-            	if(d!=0){
+            	if(d==2||d==4||d==8||d==16||d==32||d==64||d==128||d==256||d==512){
             		selected_dip = d;
             		close(dipsw);
 					close(fnds);
@@ -307,11 +312,7 @@ int dipsw_get_with_timer(int t_second)
 				}
 		
 		}//1초 지남 = 0.01초*100번 
-		if((fnds = open(fnd,O_RDWR)) <0){
-		printf("fnd open error");
-		return 0;
-		}
-	
+		
 		int s = i / 10;
 		int ss = i % 10;
 		fnd_num[0] = Time_Table[0];
