@@ -54,7 +54,10 @@ int comcards[CARD_NUM] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 
 // fnd led 관련 전역 변수 설정
 unsigned char fnd_num[4] = {0,};
-unsigned char Time_Table[] = {~0x3f, ~0x06, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x07, ~0x7f, ~0x67, ~0x00};
+//0,1,2,3,4,5,6,7,8,9,turn off
+unsigned char Time_Table[11] = {~0x3f, ~0x06, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x07, ~0x7f, ~0x67, ~0x00};
+
+
 
 //dot matrix로 표현한 트럼프 카드
 unsigned char deck[13][8] = {
@@ -217,6 +220,7 @@ int tactsw_get_with_timer(int t_second){
 	int selected_tact = 0;
 	unsigned char b=0;
 	int tactsw; 
+	
 	//tact switch 제한 시간이 0초 이하일 경우 입력값 없음 
 	if(t_second <= 0){
 		return 0;
@@ -231,12 +235,13 @@ int tactsw_get_with_timer(int t_second){
 		return 0;
 	}
 	
-	int i=10,j=100,s=0,ss=0; 
+	int i,j;
+	//i=10~0초까지
 	for(i = t_second; i>-1;i--){
 		for(j = 100; j>0;j--){
 			usleep(10000); //0.01 초 쉬기 
             read(tactsw, &b, sizeof(b));
-            //printf("입력중 %u \n", b);
+				//입력값이 1~12 사이일 경우            
             	if(1<=b && b<=12){
             		switch (b){
 					case 1:  selected_tact = 1 ; break;
@@ -247,6 +252,12 @@ int tactsw_get_with_timer(int t_second){
 					//12눌렀을 때 이전에 1이나 2나 3을 눌렀을 경우 
 					if(selected_tact==1 ||selected_tact==2||selected_tact==3){
 						printf("tactswitch 입력값: %d\n", selected_tact);
+						int turnOff = Time_Table[10];
+						fnd_num[0] = turnOff;
+    					fnd_num[1] = turnOff;
+    					fnd_num[2] = turnOff;
+    					fnd_num[3] = turnOff;
+						write(fnds, &fnd_num, sizeof(fnd_num));
 						close(tactsw);
 						close(fnds);
 						return selected_tact;
@@ -260,8 +271,8 @@ int tactsw_get_with_timer(int t_second){
 				}
 		
 		}//1초 지남 = 0.01초*100번 
-		s = i / 10;
-		ss = i % 10;
+		int s = i / 10;
+		int ss = i % 10;
 		fnd_num[0] = Time_Table[0];
     	fnd_num[1] = Time_Table[0];
     	fnd_num[2] = Time_Table[s];
@@ -270,12 +281,20 @@ int tactsw_get_with_timer(int t_second){
 		printf("%d초\n",i);
 		
 	}
+	//close 전 fnd 초기화 
+	int turnOff = Time_Table[10];
+	fnd_num[0] = turnOff;
+	fnd_num[1] = turnOff;
+	fnd_num[2] = turnOff;
+	fnd_num[3] = turnOff;
+	write(fnds, &fnd_num, sizeof(fnd_num));
+					
 	close(tactsw);
 	close(fnds);
 	return 0; //제한시간 끝	
 }
 
-//입력된 시간(초) 동안 dipsw가 값을 읽고(0.01초 마다 read)
+//입력된 t_second 시간(초) 동안 dipsw가 값을 읽고(0.01초 마다 read)
 //1초마다 fnd에 남은 제한시간을 출력 //반환값 0: 입력없음 1~3: 입력값 4~12: 무시 
 int dipsw_get_with_timer(int t_second) 
 {   
@@ -299,14 +318,23 @@ int dipsw_get_with_timer(int t_second)
 	
 	
 	int i,j;
+	//i=10~0초까지 
 	for(i = t_second; i>-1;i--){
 		for(j = 100; j>0;j--){
 			usleep(10000); //0.01 초 쉬기 
             read(dipsw, &d, sizeof(d));
-            //printf("입력중 %u \n", b);
-            	if(d==2||d==4||d==8||d==16||d==32||d==64||d==128||d==256||d==512){
+            //입력시 
+            	if(d!=0){
             		selected_dip = d;
-            		close(dipsw);
+					//close 전 fnd 초기화 
+					int turnOff = Time_Table[10];
+					fnd_num[0] = turnOff;
+    				fnd_num[1] = turnOff;
+    				fnd_num[2] = turnOff;
+    				fnd_num[3] = turnOff;
+					write(fnds, &fnd_num, sizeof(fnd_num));
+					  
+					close(dipsw);
 					close(fnds);
             		return selected_dip;
 				}
@@ -323,6 +351,14 @@ int dipsw_get_with_timer(int t_second)
 		printf("%d초\n",i);
 		
 	}
+	//close 전 fnd 초기화 
+	int turnOff = Time_Table[10];
+	fnd_num[0] = turnOff;
+    fnd_num[1] = turnOff;
+    fnd_num[2] = turnOff;
+    fnd_num[3] = turnOff;
+	write(fnds, &fnd_num, sizeof(fnd_num));
+						
 	close(dipsw);
 	close(fnds);
 	return 0; //제한시간 끝	
