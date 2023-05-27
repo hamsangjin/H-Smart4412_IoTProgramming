@@ -37,3 +37,12 @@ H-Smart4412 타겟 시스템을 이용한 기존 프로젝트 중 중복되지 �
  - 코드 확인 -> ['IndianPoker.c'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Codes/IndianPoker.c)
  - H-Smart4412 타겟 시스템의 장치 테스트 코드 : ['TestCodes'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Codes/TestCodes)
  
+---
+
+## **5. 게임 플레이 영상**
+
+1. 게임 인트로
+2. 라운드 시작
+3. 베팅
+4. 베팅 종료 및 결과
+5. 게임 종료
