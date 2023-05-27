@@ -30,3 +30,10 @@ H-Smart4412 타겟 시스템을 이용한 기존 프로젝트 중 중복되지 �
 5. 13판 중 사용자가 7선승 하면 게임을 이기고 7선패를 하면 게임을 지면서 게임이 종료된다. 게임 종료 후 최종 결과를 보여준다.
 
 ---
+
+## **4. 게임 코드**
+
+ - ** Codes 디렉토리에 `'IndianGame.c'`에 작성해놨습니다.
+ - 코드 확인 -> ['IndianGame.c'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Codes/IndianGame.c)
+ - H-Smart4412 타겟 시스템의 장치 테스트 코드 : ['TestCodes'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Codes/TestCodes)
+ 
