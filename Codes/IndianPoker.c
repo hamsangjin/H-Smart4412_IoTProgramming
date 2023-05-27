@@ -118,7 +118,8 @@ int INTRO(){
 	close(clcds);
 
    // dip switch 10초 동안 입력했냐 안 했냐
-	int dip_value =  dipsw_get_with_timer(10); 
+    int dip_value = 0; 
+	dip_value =  dipsw_get_with_timer(10); 
 	printf("dip value: %d\n", dip_value);
 	
 	return dip_value;
@@ -149,13 +150,11 @@ int BETTING_START(int com_card){
       // fnd 10초 시작
    		PRINT(" PLEASE BETTING  USE TACTSWITCH ");
 
-//      // COM 카드 출력 
-//      writeToDotDevice(com_card); 
-//
-//      // tactswitch 베팅 입력
-//	  	int user_answer = tactsw_get_with_timer(10); 
+      // COM 카드 출력 
+        writeToDotDevice(com_card); 
 
-		int user_answer = tactsw_get_with_timer_dot_mtx_put(10, com_card);
+      // tactswitch 베팅 입력
+	  	int user_answer = tactsw_get_with_timer(10); 
 
       // return 베팅 입력값
     	return user_answer;
@@ -293,10 +292,6 @@ int dipsw_get_with_timer(int t_second)
 		printf("dip open error");
 		return 0;
 	}
-	if((fnds = open(fnd,O_RDWR)) <0){
-		printf("fnd open error");
-		return 0;
-	}
 	
 	int i,j;
 	for(i = t_second; i>-1;i--){
@@ -312,6 +307,11 @@ int dipsw_get_with_timer(int t_second)
 				}
 		
 		}//1초 지남 = 0.01초*100번 
+		if((fnds = open(fnd,O_RDWR)) <0){
+		printf("fnd open error");
+		return 0;
+		}
+	
 		int s = i / 10;
 		int ss = i % 10;
 		fnd_num[0] = Time_Table[0];
