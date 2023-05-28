@@ -338,8 +338,8 @@ int dipsw_get_with_timer(int t_second)
 		for(j = 100; j>0;j--){
 			usleep(10000); //0.01 초 쉬기 
             read(dipsw, &d, sizeof(d));
-            //입력시 
-            	if(d!=0){
+            //입력값이 1~128 사이일 때 
+            	if(1<=d && d<=128){
             		selected_dip = d;
 					//close 전 fnd 초기화 
 					int turnOff = Time_Table[10];
