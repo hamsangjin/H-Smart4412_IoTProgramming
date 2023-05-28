@@ -17,10 +17,10 @@
 #define dip "/dev/dipsw"	// Dip Switch
 #define clcd "/dev/clcd" 	// Character LCD
 
-// 카드개수 
 
 
-// 함수 전역변수 설정
+
+// 함수 선언부 
 int looptime(int s, int end);
 int BETTING_START();
 void PRINT(char p[]);
@@ -108,19 +108,32 @@ void LED_ON(int user_score){
   close(leds);
 }
 
-// 게임 시작 시 호출하는 함수
+// 게임시작여부를 묻고 입력 없으면 한번 더 묻는 함수 
 int INTRO(){
-	clcds = open(clcd, O_RDWR);
-	if(clcds < 0){
-    printf("Can't open Character LCD.\n"); 
-    exit(0);
-  }
+	int dip_value = 0;
+	 
+	char first_msg[40] = " PRESS ANY KEY!  USE DIP SWITCH ";
+    char second_msg[40] = " PRESS ANY KEY! NO INPUT: QUIT! ";
+	
+	//게임시작여부 묻기(첫번째  메시지로) 
+	dip_value = intro(first_msg);
+	
+	//dip switch 입력 있으면 입력값 반환 
+	if( dip_value != 0 ) return dip_value;
+	
+	//dip switch 입력 없으면 게임시작여부 묻기(두번째 메시지로) 
+	dip_value = intro(second_msg);
+	
+	return dip_value;
+}
 
-	char pr_clcd[40] = " PRESS ANY KEY!  USE DIP SWITCH ";
-	write(clcds, pr_clcd, strlen(pr_clcd));  usleep(2000000);
-	close(clcds);
-
-   // dip switch 10초 동안 입력했냐 안 했냐
+//게임을 시작여부를 묻고 입력받는 함수 
+int intro(char P[]){
+	
+	//clcd에 인트로 메시지 출력 
+	PRINT(P);
+	
+	 // dip switch 10초 동안 입력했냐 안 했냐
     int dip_value = 0; 
 	dip_value =  dipsw_get_with_timer(10); 
 	printf("dip value: %d\n", dip_value);
@@ -513,5 +526,6 @@ int main(){
     	prepare(usercards, comcards);
     	int i  = start(usercards, comcards);
 	}
+   PRINT("     GAME          QUIT!      "); 
   return 0;
 }
