@@ -34,6 +34,8 @@ int dipsw_get_with_timer(int t_second);
 int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card);
 void writeToDotDevice(int card);
 void LED_ON(int user_score);
+int INTRO();
+int intro(char p[]);
 
 // 장치들 전역 변수 설정
 int dipsw;
@@ -112,8 +114,8 @@ void LED_ON(int user_score){
 int INTRO(){
 	int dip_value = 0;
 	 
-	char first_msg[40] = " PRESS ANY KEY!  USE DIP SWITCH ";
-    char second_msg[40] = " PRESS ANY KEY! NO INPUT: QUIT! ";
+	char first_msg[] = " PRESS ANY KEY!  USE DIP SWITCH ";
+    char second_msg[] = " PRESS ANY KEY! NO INPUT: QUIT! ";
 	
 	//게임시작여부 묻기(첫번째  메시지로) 
 	dip_value = intro(first_msg);
