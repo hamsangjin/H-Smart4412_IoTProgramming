@@ -114,8 +114,8 @@ void LED_ON(int user_score){
 int INTRO(){
 	int dip_value = 0;
 	 
-	char first_msg[] = "PRESS ANY KEY!  USE DIP SWITCH";
-    char second_msg[] = "PRESS ANY KEY! NO INPUT: QUIT!";
+	char first_msg[] = " PRESS ANY KEY!  USE DIP SWITCH ";
+    char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
 	
 	//게임시작여부 묻기(첫번째  메시지로) 
 	dip_value = intro(first_msg);
@@ -528,6 +528,6 @@ int main(){
     	prepare(usercards, comcards);
     	int i  = start(usercards, comcards);
 	}
-   PRINT("     GAME          QUIT!    "); 
+   PRINT("      GAME            QUIT      "); 
   return 0;
 }
