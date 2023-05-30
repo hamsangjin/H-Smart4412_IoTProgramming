@@ -20,7 +20,6 @@
 
 
 // 함수 선언부 
-int looptime(int s, int end);
 int betting_start();
 void print(char p[]);
 void shuffle_card(int* cards);
@@ -35,7 +34,6 @@ void writeToDotDevice(int card);
 void led_on(int user_score);
 int intro_key();
 int intro(char p[]);
-
 
 // 장치들 전역 변수 설정
 int dipsw;
@@ -57,7 +55,8 @@ int comcards[CARD_NUM] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 // fnd led 관련 전역 변수 설정
 unsigned char fnd_num[4] = {0,};
 //0,1,2,3,4,5,6,7,8,9,turn off
-unsigned char Time_Table[11] = {~0x3f, ~0x06, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x07, ~0x7f, ~0x67, ~0x00};
+//unsigned char Time_Table[11] = {~0x3f, ~0x06, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x07, ~0x7f, ~0x67, ~0x00};
+unsigned char Time_Table[11] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x67, 0x00};
 
 //dot matrix로 표현한 트럼프 카드
 unsigned char deck[13][8] = {
@@ -96,8 +95,8 @@ void led_on(int user_score){
 	// chip led 불러오기
   leds = open(led, O_RDWR);
   if (leds < 0) {
-        printf("Can't open LED.\n");
-        exit(0);
+    printf("Can't open LED.\n");
+    exit(0);
   }
 
   data = led_array[user_score];
@@ -113,7 +112,7 @@ int intro_key(){
 	int dip_value = 0;
 	 
 	char first_msg[] = " PRESS ANY KEY!  USE DIP SWITCH ";
-  char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
+  	char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
 	
 	//게임시작여부 묻기(첫번째  메시지로) 
 	dip_value = intro(first_msg);
@@ -134,7 +133,7 @@ int intro(char P[]){
 	print(P);
 	
 	// dip switch 10초 동안 입력했냐 안 했냐
-  int dip_value = 0;
+  	int dip_value = 0;
 	dip_value =  dipsw_get_with_timer(10); 
 	printf("dip value: %d\n", dip_value);
 	
@@ -153,7 +152,7 @@ void print(char P[]){
 void writeToDotDevice(int card) {
     int dot_mtx = open(dot, O_RDWR);
     if (dot_mtx < 0) {
-        printf("Cannot open dot device\n");
+    	printf("Cannot open dot device\n");
         exit(0);
     }
     write(dot_mtx, &deck[card-1], sizeof(deck[card-1]));
@@ -163,17 +162,20 @@ void writeToDotDevice(int card) {
 
 // BETTTING할 때 호출하는 함수
 int betting_start(int com_card){
-      // fnd 10초 시작
-   		print(" PLEASE BETTING  USE TACTSWITCH ");
+    
+    // COM 카드 확인 문구 
+   	print("   CHECK  THE       COM CARD    ");
 
-      // COM 카드 출력 
-        writeToDotDevice(com_card); 
+    // COM 카드 출력 
+    writeToDotDevice(com_card); 
+    
+	print(" PLEASE BETTING  USE TACTSWITCH ");
+	
+    // tactswitch 베팅 입력, fnd 10초 시작
+	int user_answer = tactsw_get_with_timer(10); 
 
-      // tactswitch 베팅 입력
-	  	int user_answer = tactsw_get_with_timer(10); 
-
-      // return 베팅 입력값
-    	return user_answer;
+    // return 베팅 입력값
+    return user_answer;
 }
 
 //카드 섞기 함수
@@ -195,13 +197,13 @@ void shuffle_card(int* cards){
 
 // 게임 준비 함수
 void prepare(int* cards1, int* cards2){
-  //  print_card(cards1);
-  //  print_card(cards2);
-   shuffle_card(cards1);
-   shuffle_card(cards2);
-   shuffle_card(cards2); // 다르게 섞이기 위해 한 번 더 셔플
-  //  print_card(cards1);
-  //  print_card(cards2);
+  	//  print_card(cards1);
+  	//  print_card(cards2);
+	shuffle_card(cards1);
+   	shuffle_card(cards2);
+   	shuffle_card(cards2); // 다르게 섞이기 위해 한 번 더 셔플
+  	//  print_card(cards1);
+  	//  print_card(cards2);
 }
 
 //게임 카드 비교 함수   
@@ -228,7 +230,7 @@ int win_lose(int user_answer, int correct_answer){
 }
 
 //입력된 시간(초) 동안 tactsw가 값을 읽고(0.01초 마다 read), 
-//1초마다 fnd에 남은 제한시간을 출력 //반환값 0: 입력없음 1~3: 입력값 4~12: 무시 
+//1초마 다 fnd에 남은 제한시간을 출력 //반환값 0: 입력없음 1~3: 입력값 4~12: 무시 
 int tactsw_get_with_timer(int t_second){   
 	int selected_tact = 0;
 	unsigned char b=0;
@@ -280,7 +282,7 @@ int tactsw_get_with_timer(int t_second){
 					}
 					//4~11무시 
 					default: printf("press other key\n"); break; 		            
-				}	
+					}	
 				}
 		
 		}//1초 지남 = 0.01초*100번 
@@ -476,7 +478,7 @@ void start(int* cards1, int* cards2){
     int user_card = cards2[i];
     
     // teraterm으로 해당 라운드 카드 확인
-	  printf("com_card: %d\n", com_card);
+	printf("com_card: %d\n", com_card);
     printf("user_card: %d\n", user_card);
     
     // CLCD로 라운드 출력
@@ -498,6 +500,7 @@ void start(int* cards1, int* cards2){
         com_score++;
         print("     PLAYER           LOSE      "); usleep(2000000);
     }
+    
 
     // 스코어 공개와 동시에 CHIP LED 키기(5초로 설정되어 있음)
     sprintf(score_clcd, "PLAYER SCORE = %d COM  SCORE = %d ", user_score, com_score);
@@ -522,10 +525,10 @@ void start(int* cards1, int* cards2){
 }
 
 int main(){
-   if(intro_key() != 0){
+   	if(intro_key() != 0){
     	prepare(usercards, comcards);
     	start(usercards, comcards);
 	}
-   print("      GAME            QUIT      "); 
-  return 0;
+   	print("      GAME            QUIT      "); 
+  	return 0;
 }
