@@ -20,16 +20,37 @@
 
 
 // 함수 선언부 
+
+// 베팅할 때 호출하는 함수로 컴퓨터 카드와 베팅을 입력받는 역할 
 int betting_start();
+
+// CLCD에 문구를 출력할 때마다 호출하는 함수 
 void print(char p[]);
+
+// 카드 섞어주는 알고리즘이 들어있는 함수 
 void shuffle_card(int* cards);
+
+// 게임 시작 전 유저와 컴퓨터  카드를 섞어주는 함수 
 void prepare(int* cards1, int* cards2);
+
+// 라운드마다 게임의 결과를 미리 계산한 값을 저장하는 함수 
 int compare_card(int com_card, int user_card);
+
+// compare_card에서 저장된 값으로 사용자의 베팅과 비교하는 함수 
 int win_lose(int user_answer, int correct_answer);
+
+// 게임에 필요한 함수들을 호출해주는 함수 
 void start(int* cards1, int* cards2);
-int tactsw_get_with_timer(int t_second); 
-int dipsw_get_with_timer(int t_second); 
-int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card);
+
+// 베팅할 때 TACT_SWITCH 입력과 FND_LED를 출력해주는 함수 
+int tactsw_get_with_timer(int t_second);
+
+// 시작할 때 DIP_SWITCH 입력과 FND_LED를 출력해주는 함수 
+int dipsw_get_with_timer(int t_second);
+
+
+//int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card);
+
 void writeToDotDevice(int card);
 void led_on(int user_score);
 int intro_key();
@@ -378,78 +399,78 @@ int dipsw_get_with_timer(int t_second)
 	return 0; //제한시간 끝	
 }
 
-int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card) 
-{   
-	int selected_tact = 0;
-	unsigned char b=0;
-	int tactsw; 
-	
-	//tact switch 제한 시간이 0초 이하일 경우 입력값 없음 
-	if(t_second <= 0){
-		return 0;
-	}
-	
-	if((tactsw = open( tact, O_RDWR )) < 0){     	// 예외처리    
-		printf("tact open error");
-		return 0;
-	}
-	if((fnds = open(fnd,O_RDWR)) <0){
-		printf("fnd open error");
-		return 0;
-	}
-	
-	
-	int i,j;
-	
-	for(i = t_second; i>-1;i--){
-		for(j = 100; j>0;j--){
-			//usleep(10000); //0.01 초 쉬기 
-            read(tactsw, &b, sizeof(b));
-            if((dot_mtx = open(dot,O_RDWR)) <0){
-			printf("dot open error");
-			return 0;
-			}
-			write(dot_mtx, &deck[com_card-1], sizeof(deck[com_card-1])); usleep(10000);
-			close(dot_mtx);
-            //printf("입력중 %u \n", b);
-            	if(1<=b && b<=12){
-            		switch (b){
-					case 1:  selected_tact = 1 ; break;
-					case 2:  selected_tact = 2 ; break;
-					case 3:  selected_tact = 3 ; break;
-					case 12: 
-					{
-					//12눌렀을 때 이전에 1이나 2나 3을 눌렀을 경우 
-					if(selected_tact==1 ||selected_tact==2||selected_tact==3){
-						printf("tactswitch 입력값: %d\n", selected_tact);
-						close(tactsw);
-						close(fnds);
-						close(dot_mtx);
-						return selected_tact;
-					}
-					//12를 눌렀지만 이전에 1이나 2나 3을 누르지 않았을 경우 
-					else printf("press 12 after press 1 or 2 or 3\n");
-					}
-					//4~11무시 
-					default: printf("press other key\n"); break; 		            
-				}	
-				}
-		
-		}//1초 지남 = 0.01초*100번 
-		int s = i / 10;
-		int ss = i % 10;
-		fnd_num[0] = Time_Table[0];
-    	fnd_num[1] = Time_Table[0];
-    	fnd_num[2] = Time_Table[s];
-    	fnd_num[3] = Time_Table[ss];
-		write(fnds, &fnd_num, sizeof(fnd_num));
-		printf("%d초\n",i);
-	}
-	close(tactsw);
-	close(fnds);
-	close(dot_mtx);
-	return 0; //제한시간 끝	
-}
+//int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card) 
+//{   
+//	int selected_tact = 0;
+//	unsigned char b=0;
+//	int tactsw; 
+//	
+//	//tact switch 제한 시간이 0초 이하일 경우 입력값 없음 
+//	if(t_second <= 0){
+//		return 0;
+//	}
+//	
+//	if((tactsw = open( tact, O_RDWR )) < 0){     	// 예외처리    
+//		printf("tact open error");
+//		return 0;
+//	}
+//	if((fnds = open(fnd,O_RDWR)) <0){
+//		printf("fnd open error");
+//		return 0;
+//	}
+//	
+//	
+//	int i,j;
+//	
+//	for(i = t_second; i>-1;i--){
+//		for(j = 100; j>0;j--){
+//			//usleep(10000); //0.01 초 쉬기 
+//            read(tactsw, &b, sizeof(b));
+//            if((dot_mtx = open(dot,O_RDWR)) <0){
+//			printf("dot open error");
+//			return 0;
+//			}
+//			write(dot_mtx, &deck[com_card-1], sizeof(deck[com_card-1])); usleep(10000);
+//			close(dot_mtx);
+//            //printf("입력중 %u \n", b);
+//            	if(1<=b && b<=12){
+//            		switch (b){
+//					case 1:  selected_tact = 1 ; break;
+//					case 2:  selected_tact = 2 ; break;
+//					case 3:  selected_tact = 3 ; break;
+//					case 12: 
+//					{
+//					//12눌렀을 때 이전에 1이나 2나 3을 눌렀을 경우 
+//					if(selected_tact==1 ||selected_tact==2||selected_tact==3){
+//						printf("tactswitch 입력값: %d\n", selected_tact);
+//						close(tactsw);
+//						close(fnds);
+//						close(dot_mtx);
+//						return selected_tact;
+//					}
+//					//12를 눌렀지만 이전에 1이나 2나 3을 누르지 않았을 경우 
+//					else printf("press 12 after press 1 or 2 or 3\n");
+//					}
+//					//4~11무시 
+//					default: printf("press other key\n"); break; 		            
+//				}	
+//				}
+//		
+//		}//1초 지남 = 0.01초*100번 
+//		int s = i / 10;
+//		int ss = i % 10;
+//		fnd_num[0] = Time_Table[0];
+//    	fnd_num[1] = Time_Table[0];
+//    	fnd_num[2] = Time_Table[s];
+//    	fnd_num[3] = Time_Table[ss];
+//		write(fnds, &fnd_num, sizeof(fnd_num));
+//		printf("%d초\n",i);
+//	}
+//	close(tactsw);
+//	close(fnds);
+//	close(dot_mtx);
+//	return 0; //제한시간 끝	
+//}
 
 // 게임 시작 함수
 void start(int* cards1, int* cards2){
