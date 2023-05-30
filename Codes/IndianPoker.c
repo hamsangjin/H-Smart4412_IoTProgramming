@@ -9,6 +9,7 @@
 #include <string.h> 		// 문자열 처리 
 #include <time.h> 			// 시간 관련 
 
+
 // Target System
 #define fnd "/dev/fnd" 		// 7-Segment FND 
 #define dot "/dev/dot" 		// Dot Matrix
@@ -18,24 +19,23 @@
 #define clcd "/dev/clcd" 	// Character LCD
 
 
-
-
 // 함수 선언부 
 int looptime(int s, int end);
-int BETTING_START();
-void PRINT(char p[]);
+int betting_start();
+void print(char p[]);
 void shuffle_card(int* cards);
 void prepare(int* cards1, int* cards2);
 int compare_card(int com_card, int user_card);
 int win_lose(int user_answer, int correct_answer);
-int start(int* cards1, int* cards2);
+void start(int* cards1, int* cards2);
 int tactsw_get_with_timer(int t_second); 
 int dipsw_get_with_timer(int t_second); 
 int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card);
 void writeToDotDevice(int card);
-void LED_ON(int user_score);
-int INTRO();
+void led_on(int user_score);
+int intro_key();
 int intro(char p[]);
+
 
 // 장치들 전역 변수 설정
 int dipsw;
@@ -58,8 +58,6 @@ int comcards[CARD_NUM] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 unsigned char fnd_num[4] = {0,};
 //0,1,2,3,4,5,6,7,8,9,turn off
 unsigned char Time_Table[11] = {~0x3f, ~0x06, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x07, ~0x7f, ~0x67, ~0x00};
-
-
 
 //dot matrix로 표현한 트럼프 카드
 unsigned char deck[13][8] = {
@@ -92,7 +90,7 @@ unsigned char deck[13][8] = {
 };
 
 // ChipLED 출력(5초) 함수
-void LED_ON(int user_score){
+void led_on(int user_score){
   unsigned char data;
 
 	// chip led 불러오기
@@ -110,12 +108,12 @@ void LED_ON(int user_score){
   close(leds);
 }
 
-// 게임시작여부를 묻고 입력 없으면 한번 더 묻는 함수 
-int INTRO(){
+// 게임시작여부를 묻는 함수
+int intro_key(){
 	int dip_value = 0;
 	 
 	char first_msg[] = " PRESS ANY KEY!  USE DIP SWITCH ";
-    char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
+  char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
 	
 	//게임시작여부 묻기(첫번째  메시지로) 
 	dip_value = intro(first_msg);
@@ -133,10 +131,10 @@ int INTRO(){
 int intro(char P[]){
 	
 	//clcd에 인트로 메시지 출력 
-	PRINT(P);
+	print(P);
 	
-	 // dip switch 10초 동안 입력했냐 안 했냐
-    int dip_value = 0; 
+	// dip switch 10초 동안 입력했냐 안 했냐
+  int dip_value = 0;
 	dip_value =  dipsw_get_with_timer(10); 
 	printf("dip value: %d\n", dip_value);
 	
@@ -144,7 +142,7 @@ int intro(char P[]){
 }
 
 // CLCD 기본 출력 함수 
-void PRINT(char P[]){
+void print(char P[]){
 	clcds = open(clcd, O_RDWR);
 	if(clcds < 0){printf("Can't open Character LCD.\n"); exit(0);}
 	write(clcds, P, strlen(P));
@@ -164,9 +162,9 @@ void writeToDotDevice(int card) {
 }
 
 // BETTTING할 때 호출하는 함수
-int BETTING_START(int com_card){
+int betting_start(int com_card){
       // fnd 10초 시작
-   		PRINT(" PLEASE BETTING  USE TACTSWITCH ");
+   		print(" PLEASE BETTING  USE TACTSWITCH ");
 
       // COM 카드 출력 
         writeToDotDevice(com_card); 
@@ -453,7 +451,7 @@ int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card)
 }
 
 // 게임 시작 함수
-int start(int* cards1, int* cards2){
+void start(int* cards1, int* cards2){
   int ROUND = 13;
   int com_score = 0;
   int user_score = 0;
@@ -462,13 +460,13 @@ int start(int* cards1, int* cards2){
 
 
   // Game Rule 설명
-  PRINT("      GAME           START!     ");  usleep(2000000);
-  PRINT("  INDIAN  GAME     GAME  RULE   ");  usleep(2000000);
-  PRINT("     ON THE       TACT  SWITCH  ");  usleep(2000000);
-  PRINT("   1ST BUTTON     PLAYER = COM  ");  usleep(2000000);
-  PRINT("   2ND BUTTON     PLAYER < COM  ");  usleep(2000000);
-  PRINT("   3RD BUTTON     PLAYER > COM  ");  usleep(2000000);
-  PRINT("  12TH  BUTTON      BETTING!    ");  usleep(2000000);
+  print("      GAME           START!     ");  usleep(2000000);
+  print("  INDIAN  GAME     GAME  RULE   ");  usleep(2000000);
+  print("     ON THE       TACT  SWITCH  ");  usleep(2000000);
+  print("   1ST BUTTON     PLAYER = COM  ");  usleep(2000000);
+  print("   2ND BUTTON     PLAYER < COM  ");  usleep(2000000);
+  print("   3RD BUTTON     PLAYER > COM  ");  usleep(2000000);
+  print("  12TH  BUTTON      BETTING!    ");  usleep(2000000);
 
   // Round 반복
   int i;
@@ -483,10 +481,10 @@ int start(int* cards1, int* cards2){
     
     // CLCD로 라운드 출력
     sprintf(round_clcd, "    ROUND  %d         START!     ", i+1);
-    PRINT(round_clcd);  usleep(2000000);
+    print(round_clcd);  usleep(2000000);
 
-    // BETTING_START 함수 호출해 user_answer에 베팅 값 저장
-    int user_answer = BETTING_START(com_card);         // 베팅 값 저장
+    // betting_start 함수 호출해 user_answer에 베팅 값 저장
+    int user_answer = betting_start(com_card);         // 베팅 값 저장
  
     // 카드 비교 결과 저장
     int correct_answer = compare_card(com_card, user_card);    
@@ -494,40 +492,40 @@ int start(int* cards1, int* cards2){
     // 베팅 결과 확인
     if(win_lose(user_answer, correct_answer)){           
         user_score++;
-        PRINT("     PLAYER           WIN!      "); usleep(2000000);
+        print("     PLAYER           WIN!      "); usleep(2000000);
     }
     else{
         com_score++;
-        PRINT("     PLAYER           LOSE      "); usleep(2000000);
+        print("     PLAYER           LOSE      "); usleep(2000000);
     }
 
     // 스코어 공개와 동시에 CHIP LED 키기(5초로 설정되어 있음)
     sprintf(score_clcd, "PLAYER SCORE = %d COM  SCORE = %d ", user_score, com_score);
-    PRINT(score_clcd);
-    LED_ON(user_score);
+    print(score_clcd);
+    led_on(user_score);
 
     
-    PRINT("   CHECK  THE      USER  CARD   ");
+    print("   CHECK  THE      USER  CARD   ");
 
     // 사용자 카드 공개(3초)
     writeToDotDevice(user_card);
 
     if(user_score>=7){
-      PRINT("   GAME CLEAR      PLAYER WIN   ");   usleep(2000000);
+      print("   GAME CLEAR      PLAYER WIN   ");   usleep(2000000);
       break;
     }
     if(com_score>=7){
-      PRINT("   GAME  OVER     PLAYER  LOSE  ");   usleep(2000000);
+      print("   GAME  OVER     PLAYER  LOSE  ");   usleep(2000000);
       break;
     }
   }
 }
 
 int main(){
-   if(INTRO() != 0){
+   if(intro_key() != 0){
     	prepare(usercards, comcards);
-    	int i  = start(usercards, comcards);
+    	start(usercards, comcards);
 	}
-   PRINT("      GAME            QUIT      "); 
+   print("      GAME            QUIT      "); 
   return 0;
 }
