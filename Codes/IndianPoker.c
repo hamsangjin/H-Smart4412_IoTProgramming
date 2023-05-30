@@ -20,7 +20,6 @@
 
 
 // 함수 선언부 
-
 // 베팅할 때 호출하는 함수로 컴퓨터 카드와 베팅을 입력받는 역할 
 int betting_start();
 
@@ -48,11 +47,13 @@ int tactsw_get_with_timer(int t_second);
 // 시작할 때 DIP_SWITCH 입력과 FND_LED를 출력해주는 함수 
 int dipsw_get_with_timer(int t_second);
 
-
-//int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card);
-
+// 랜덤으로 섞은 유저와 컴퓨터의 카드를 DotMatrix로 보여주는 함수
 void writeToDotDevice(int card);
+
+// 유저의 승리 개수만큼 Chip LED를 켜주는 함수
 void led_on(int user_score);
+
+// 게임 시작 여부(Dip Switch 조작)를 확인해주는 함수들
 int intro_key();
 int intro(char p[]);
 
@@ -132,7 +133,7 @@ int intro_key(){
 	int dip_value = 0;
 	 
 	char first_msg[] = " PRESS ANY KEY!  USE DIP SWITCH ";
-  	char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
+  char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
 	
 	//게임시작여부 묻기(첫번째  메시지로) 
 	dip_value = intro(first_msg);
@@ -153,7 +154,7 @@ int intro(char P[]){
 	print(P);
 	
 	// dip switch 10초 동안 입력했냐 안 했냐
-  	int dip_value = 0;
+  int dip_value = 0;
 	dip_value =  dipsw_get_with_timer(10); 
 	printf("dip value: %d\n", dip_value);
 	
@@ -184,15 +185,15 @@ void writeToDotDevice(int card) {
 int betting_start(int com_card){
     
     // COM 카드 확인 문구 
-   	print("   CHECK  THE       COM CARD    ");
+   	print("   CHECK YOUR       COM CARD    ");
 
     // COM 카드 출력 
     writeToDotDevice(com_card); 
     
-	print(" PLEASE BETTING  USE TACTSWITCH ");
+	  print(" PLEASE BETTING  USE TACTSWITCH ");
 	
     // tactswitch 베팅 입력, fnd 10초 시작
-	int user_answer = tactsw_get_with_timer(10); 
+	  int user_answer = tactsw_get_with_timer(10); 
 
     // return 베팅 입력값
     return user_answer;
@@ -217,13 +218,9 @@ void shuffle_card(int* cards){
 
 // 게임 준비 함수
 void prepare(int* cards1, int* cards2){
-  	//  print_card(cards1);
-  	//  print_card(cards2);
-	shuffle_card(cards1);
+	  shuffle_card(cards1);
    	shuffle_card(cards2);
    	shuffle_card(cards2); // 다르게 섞이기 위해 한 번 더 셔플
-  	//  print_card(cards1);
-  	//  print_card(cards2);
 }
 
 //게임 카드 비교 함수   
@@ -309,9 +306,9 @@ int tactsw_get_with_timer(int t_second){
 		int s = i / 10;
 		int ss = i % 10;
 		fnd_num[0] = Time_Table[0];
-    	fnd_num[1] = Time_Table[0];
-    	fnd_num[2] = Time_Table[s];
-    	fnd_num[3] = Time_Table[ss];
+    fnd_num[1] = Time_Table[0];
+    fnd_num[2] = Time_Table[s];
+    fnd_num[3] = Time_Table[ss];
 		write(fnds, &fnd_num, sizeof(fnd_num));
 		printf("%d초\n",i);
 		
@@ -399,78 +396,6 @@ int dipsw_get_with_timer(int t_second)
 	return 0; //제한시간 끝	
 }
 
-//int tactsw_get_with_timer_dot_mtx_put(int t_second, int com_card) 
-//{   
-//	int selected_tact = 0;
-//	unsigned char b=0;
-//	int tactsw; 
-//	
-//	//tact switch 제한 시간이 0초 이하일 경우 입력값 없음 
-//	if(t_second <= 0){
-//		return 0;
-//	}
-//	
-//	if((tactsw = open( tact, O_RDWR )) < 0){     	// 예외처리    
-//		printf("tact open error");
-//		return 0;
-//	}
-//	if((fnds = open(fnd,O_RDWR)) <0){
-//		printf("fnd open error");
-//		return 0;
-//	}
-//	
-//	
-//	int i,j;
-//	
-//	for(i = t_second; i>-1;i--){
-//		for(j = 100; j>0;j--){
-//			//usleep(10000); //0.01 초 쉬기 
-//            read(tactsw, &b, sizeof(b));
-//            if((dot_mtx = open(dot,O_RDWR)) <0){
-//			printf("dot open error");
-//			return 0;
-//			}
-//			write(dot_mtx, &deck[com_card-1], sizeof(deck[com_card-1])); usleep(10000);
-//			close(dot_mtx);
-//            //printf("입력중 %u \n", b);
-//            	if(1<=b && b<=12){
-//            		switch (b){
-//					case 1:  selected_tact = 1 ; break;
-//					case 2:  selected_tact = 2 ; break;
-//					case 3:  selected_tact = 3 ; break;
-//					case 12: 
-//					{
-//					//12눌렀을 때 이전에 1이나 2나 3을 눌렀을 경우 
-//					if(selected_tact==1 ||selected_tact==2||selected_tact==3){
-//						printf("tactswitch 입력값: %d\n", selected_tact);
-//						close(tactsw);
-//						close(fnds);
-//						close(dot_mtx);
-//						return selected_tact;
-//					}
-//					//12를 눌렀지만 이전에 1이나 2나 3을 누르지 않았을 경우 
-//					else printf("press 12 after press 1 or 2 or 3\n");
-//					}
-//					//4~11무시 
-//					default: printf("press other key\n"); break; 		            
-//				}	
-//				}
-//		
-//		}//1초 지남 = 0.01초*100번 
-//		int s = i / 10;
-//		int ss = i % 10;
-//		fnd_num[0] = Time_Table[0];
-//    	fnd_num[1] = Time_Table[0];
-//    	fnd_num[2] = Time_Table[s];
-//    	fnd_num[3] = Time_Table[ss];
-//		write(fnds, &fnd_num, sizeof(fnd_num));
-//		printf("%d초\n",i);
-//	}
-//	close(tactsw);
-//	close(fnds);
-//	close(dot_mtx);
-//	return 0; //제한시간 끝	
-//}
 
 // 게임 시작 함수
 void start(int* cards1, int* cards2){
@@ -483,7 +408,7 @@ void start(int* cards1, int* cards2){
 
   // Game Rule 설명
   print("      GAME           START!     ");  usleep(2000000);
-  print("  INDIAN  GAME     GAME  RULE   ");  usleep(2000000);
+  print("  INDIAN  POKER     GAME  RULE   ");  usleep(2000000);
   print("     ON THE       TACT  SWITCH  ");  usleep(2000000);
   print("   1ST BUTTON     PLAYER = COM  ");  usleep(2000000);
   print("   2ND BUTTON     PLAYER < COM  ");  usleep(2000000);
@@ -498,7 +423,7 @@ void start(int* cards1, int* cards2){
     int user_card = cards2[i];
     
     // teraterm으로 해당 라운드 카드 확인
-	printf("com_card: %d\n", com_card);
+	  printf("com_card: %d\n", com_card);
     printf("user_card: %d\n", user_card);
     
     // CLCD로 라운드 출력
@@ -528,7 +453,7 @@ void start(int* cards1, int* cards2){
     led_on(user_score);
 
     
-    print("   CHECK  THE      USER  CARD   ");
+    print("   CHECK YOUR      USER  CARD   ");
 
     // 사용자 카드 공개(3초)
     writeToDotDevice(user_card);
@@ -549,6 +474,6 @@ int main(){
     	prepare(usercards, comcards);
     	start(usercards, comcards);
 	}
-   	print("      GAME            QUIT      "); 
+   	print("      GAME            END!      "); 
   	return 0;
 }
