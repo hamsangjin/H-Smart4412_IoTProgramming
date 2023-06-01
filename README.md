@@ -33,8 +33,8 @@ H-Smart4412 타겟 시스템을 이용한 기존 프로젝트 중 중복되지 �
 
 ## **4. 게임 코드**
 
- - ** Codes 디렉토리에 `'IndianPoker.c'`에 작성해놨습니다.
- - 코드 확인 -> ['IndianPoker.c'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Codes/IndianPoker.c)
+ - **Codes** 디렉토리에 `'IndianPoker.c'`에 작성해놨습니다.
+ - 코드 확인 : ['IndianPoker.c'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Codes/IndianPoker.c)
  - H-Smart4412 타겟 시스템의 장치 테스트 코드 : ['TestCodes'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Codes/TestCodes)
  
 ---
@@ -46,3 +46,11 @@ H-Smart4412 타겟 시스템을 이용한 기존 프로젝트 중 중복되지 �
 3. 베팅
 4. 베팅 종료 및 결과
 5. 게임 종료
+
+## **6. 진행 과정**
+ - **프로젝트 계획 발표** : ['Indian Poker_01_20230510.pdf'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Docs/Indian Poker_01_20230510.pdf)
+ - **프로젝트 중간 발표 1** : ['Indian Poker_01_20230517.pdf'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Docs/Indian Poker_02_20230518.pdf)
+ - **프로젝트 중간 발표 2** : ['Indian Poker_01_20230524.pdf'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Docs/Indian Poker_03_20230525.pdf)
+ - **프로젝트 중간 발표 3** : ['Indian Poker_01_20230601.pdf'](https://github.com/JoHyeonGyeong/iot_indianPoker/tree/main/Docs/Indian Poker_04_20230601.pdf)
+ - **프로젝트 중간 발표 4** : 23.06.08 예정
+ - **프로젝트 최종 발표** : 23. 06. 15 예정
