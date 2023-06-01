@@ -61,7 +61,6 @@ int intro(char p[]);
 int dipsw;
 int leds;
 int dot_mtx;
-int user_dot_matrix;
 int tactsw;
 int clcds;
 int fnds;
@@ -432,7 +431,12 @@ void start(int* cards1, int* cards2){
 
     // betting_start 함수 호출해 user_answer에 베팅 값 저장
     int user_answer = betting_start(com_card);         // 베팅 값 저장
- 
+
+		print("  BETTING DONE  CHECK  YOUR CARD");
+
+    // 사용자 카드 공개(3초)
+    writeToDotDevice(user_card);
+
     // 카드 비교 결과 저장
     int correct_answer = compare_card(com_card, user_card);    
     
@@ -446,17 +450,14 @@ void start(int* cards1, int* cards2){
         print("     PLAYER           LOSE      "); usleep(2000000);
     }
     
-
+		
     // 스코어 공개와 동시에 CHIP LED 키기(5초로 설정되어 있음)
     sprintf(score_clcd, "PLAYER SCORE = %d COM  SCORE = %d ", user_score, com_score);
     print(score_clcd);
     led_on(user_score);
 
     
-    print("   CHECK YOUR      USER  CARD   ");
 
-    // 사용자 카드 공개(3초)
-    writeToDotDevice(user_card);
 
     if(user_score>=7){
       print("   GAME CLEAR      PLAYER WIN   ");   usleep(2000000);
