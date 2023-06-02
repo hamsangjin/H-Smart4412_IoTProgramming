@@ -83,7 +83,7 @@ unsigned char fnd_num[4] = {0,};
 unsigned char Time_Table[11] = {~0x3f, ~0x06, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x07, ~0x7f, ~0x67, ~0x00};
 
 // hint_count 전역 변수 설정
-int hint_count = 0
+int hint_count = 0;
 
 //dot matrix로 표현한 트럼프 카드
 unsigned char deck[13][8] = {
@@ -328,7 +328,7 @@ int tactsw_get_with_timer(int t_second){
 							print(" HINT COUNT = 0  CAN'T USE HINT ");	usleep(2000000);
 							// 다시 베팅 입력받음
 							tactsw_get_with_timer(10);
-							// break 해야하나 ? 안해야하나 ?
+							// break 해야하나 ? 안해야하나 ? 재귀로 불러온거라 불러온 함수 끝나면 다시 아래 코드 실행할 거 같아서 break 실행해보려고 하는 거임
 							break;
 						}
 						printf("tactswitch 입력값: %d\n", selected_tact);
@@ -466,7 +466,8 @@ void start(int* cards1, int* cards2){
   print("   3RD BUTTON     PLAYER > COM  ");  usleep(2000000);
 	print("   4th BUTTON     UNUSED  CARD  ");  usleep(2000000);
 	print("   5th BUTTON      USED  CARD   ");  usleep(2000000);
-  print("  12TH  BUTTON      CHOOSE    ");  usleep(2000000);
+  print("  12TH  BUTTON       CHOOSE     ");  usleep(2000000);
+	print("  THE  HINT IS    GIVEN  TWICE  ");	usleep(2000000);
 
   // Round 반복
   int i;
@@ -486,10 +487,11 @@ void start(int* cards1, int* cards2){
     // betting_start 함수 호출해 user_answer에 베팅 값 저장
     int user_answer = betting_start(com_card);         // 베팅 값 저장
 		
-		// 힌트 호출(4, 5일 때만 처리됨 if문(4나 5)은 함수 내에 있음)
-		// 여기선 그냥 함수 호출해도 알아서 함수들에서 유저 베팅값과 힌트 카운트 계산함
-		hint(user_answer, cards2, i);
-
+		// 힌트 호출(4, 5일 때만 처리됨 if문(4나 5)은 함수 내에도 있음)
+		if (user_answer == 4 || user_answer == 5) {
+			hint(user_answer, cards2, i);
+			hint_count = hint_count - 1;
+    }
 
 		print("  BETTING DONE  CHECK  YOUR CARD");
 
