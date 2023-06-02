@@ -21,7 +21,7 @@
 
 // 함수 선언부 
 // 베팅할 때 호출하는 함수로 컴퓨터 카드와 베팅을 입력받는 역할 
-int betting_start();
+int betting_start(int com_card);
 
 // CLCD에 문구를 출력할 때마다 호출하는 함수 
 void print(char p[]);
@@ -43,6 +43,10 @@ void start(int* cards1, int* cards2);
 
 // 베팅할 때 TACT_SWITCH 입력과 FND_LED를 출력해주는 함수 
 int tactsw_get_with_timer(int t_second);
+
+void hint_dotmatrix(int card);
+
+void hint(int user_answer, int* user_card, int i);
 
 // 시작할 때 DIP_SWITCH 입력과 FND_LED를 출력해주는 함수 
 int dipsw_get_with_timer(int t_second);
@@ -77,6 +81,9 @@ int comcards[CARD_NUM] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 unsigned char fnd_num[4] = {0,};
 //0,1,2,3,4,5,6,7,8,9,turn off
 unsigned char Time_Table[11] = {~0x3f, ~0x06, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x07, ~0x7f, ~0x67, ~0x00};
+
+// hint_count 전역 변수 설정
+int hint_count = 0
 
 //dot matrix로 표현한 트럼프 카드
 unsigned char deck[13][8] = {
@@ -168,7 +175,7 @@ void print(char P[]){
 	close(clcds);
 }
 
-// dotmatrix 출력 함수
+// dotmatrix 출력 함수(3초)
 void writeToDotDevice(int card) {
     int dot_mtx = open(dot, O_RDWR);
     if (dot_mtx < 0) {
@@ -178,6 +185,38 @@ void writeToDotDevice(int card) {
     write(dot_mtx, &deck[card-1], sizeof(deck[card-1]));
     usleep(3000000);
     close(dot_mtx);
+}
+
+// hint 카드 dotmatrix 출력 함수(2초) - 하나씩 출력해줄 때 3초는 너무 길어서 2초짜리 함수 생성
+void hint_dotmatrix(int card) {
+    int dot_mtx = open(dot, O_RDWR);
+    if (dot_mtx < 0) {
+    	printf("Cannot open dot device\n");
+        exit(0);
+    }
+    write(dot_mtx, &deck[card-1], sizeof(deck[card-1]));
+    usleep(2000000);
+    close(dot_mtx);
+}
+
+// user의 베팅값을 가져와서 4나 5인지 확인 후 그에 맞는 힌트 출력
+void hint(int user_answer, int* user_card, int i) {
+  int j;
+  char hint_result[32];
+	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
+  if (user_answer == 4) {
+    for (i; i < sizeof(user_card) / sizeof(int); i++) {
+      int card = user_card[i];
+      hint_dotmatrix(card);
+    }
+  }
+	// 5인 경우 지금까지 사용한 카드를 출력
+  else if (user_answer == 5) {
+    for (j = 0; j < i; j++) {
+      int card = user_card[j];
+      hint_dotmatrix(card);
+    }
+  }
 }
 
 // BETTTING할 때 호출하는 함수
@@ -246,7 +285,7 @@ int win_lose(int user_answer, int correct_answer){
 }
 
 //입력된 시간(초) 동안 tactsw가 값을 읽고(0.01초 마다 read), 
-//1초마 다 fnd에 남은 제한시간을 출력 //반환값 0: 입력없음 1~3: 입력값 4~12: 무시 
+//1초마 다 fnd에 남은 제한시간을 출력 //반환값 0: 입력없음 1~5: 입력값 6~12: 무시 
 int tactsw_get_with_timer(int t_second){   
 	int selected_tact = 0;
 	unsigned char b=0;
@@ -278,13 +317,23 @@ int tactsw_get_with_timer(int t_second){
 					case 1:  selected_tact = 1 ; break;
 					case 2:  selected_tact = 2 ; break;
 					case 3:  selected_tact = 3 ; break;
+					case 4:  selected_tact = 4 ; break;
+					case 5:  selected_tact = 5 ; break;
 					case 12: 
 					{
-					//12눌렀을 때 이전에 1이나 2나 3을 눌렀을 경우 
-					if(selected_tact==1 ||selected_tact==2||selected_tact==3){
+					//12눌렀을 때 이전에 1~5을 눌렀을 경우 
+					if(selected_tact==1 ||selected_tact==2||selected_tact==3||selected_tact==4||selected_tact==5){
+						// hint_count가 0인데 4번이나 5번을 눌렀을 경우 clcd로 힌트 개수가 없다고 출력하고 다시 입력받음
+						if(hint_count <= 0 && (selected_tact == 4 || selected_tact == 5)){
+							print(" HINT COUNT = 0  CAN'T USE HINT ");	usleep(2000000);
+							// 다시 베팅 입력받음
+							tactsw_get_with_timer(10);
+							// break 해야하나 ? 안해야하나 ?
+							break;
+						}
 						printf("tactswitch 입력값: %d\n", selected_tact);
 						int turnOff = Time_Table[10];
-						fnd_num[0] = turnOff;
+							fnd_num[0] = turnOff;
     					fnd_num[1] = turnOff;
     					fnd_num[2] = turnOff;
     					fnd_num[3] = turnOff;
@@ -293,10 +342,10 @@ int tactsw_get_with_timer(int t_second){
 						close(fnds);
 						return selected_tact;
 					}
-					//12를 눌렀지만 이전에 1이나 2나 3을 누르지 않았을 경우 
-					else printf("press 12 after press 1 or 2 or 3\n");
+					//12를 눌렀지만 이전에 1~5을 누르지 않았을 경우 
+					else printf("press 12 after press 1 ~ 5\n");
 					}
-					//4~11무시 
+					//6~11무시 
 					default: printf("press other key\n"); break; 		            
 					}	
 				}
@@ -396,11 +445,14 @@ int dipsw_get_with_timer(int t_second)
 }
 
 
+
+
 // 게임 시작 함수
 void start(int* cards1, int* cards2){
   int ROUND = 13;
   int com_score = 0;
   int user_score = 0;
+	int hint_count = 2;
   char round_clcd[32];
   char score_clcd[32];
 
@@ -412,7 +464,9 @@ void start(int* cards1, int* cards2){
   print("   1ST BUTTON     PLAYER = COM  ");  usleep(2000000);
   print("   2ND BUTTON     PLAYER < COM  ");  usleep(2000000);
   print("   3RD BUTTON     PLAYER > COM  ");  usleep(2000000);
-  print("  12TH  BUTTON      BETTING!    ");  usleep(2000000);
+	print("   4th BUTTON     UNUSED  CARD  ");  usleep(2000000);
+	print("   5th BUTTON      USED  CARD   ");  usleep(2000000);
+  print("  12TH  BUTTON      CHOOSE    ");  usleep(2000000);
 
   // Round 반복
   int i;
@@ -431,6 +485,11 @@ void start(int* cards1, int* cards2){
 
     // betting_start 함수 호출해 user_answer에 베팅 값 저장
     int user_answer = betting_start(com_card);         // 베팅 값 저장
+		
+		// 힌트 호출(4, 5일 때만 처리됨 if문(4나 5)은 함수 내에 있음)
+		// 여기선 그냥 함수 호출해도 알아서 함수들에서 유저 베팅값과 힌트 카운트 계산함
+		hint(user_answer, cards2, i);
+
 
 		print("  BETTING DONE  CHECK  YOUR CARD");
 
