@@ -78,7 +78,7 @@ int clcds;
 int fnds;
 
 // 재시작했을 때 룰 출력 안 하기 위한 룰 카운트 생성
-int rule_count = 1;
+int rule_count = 0;
 
 // ChipLED 16진수 값들 미리 선언
 char led_array[] = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00};
@@ -222,6 +222,7 @@ void hint(int user_answer, int* user_card, int i) {
     for (i; i < 13; i++) {
 			int t;
 			for(t=0; t<14-i; t++){
+				printf("hint_result[%d] = %d", t, hint_result[t]);
 				hint_result[t] = user_card[i];
 			}
       	printf("not use card: %d\n", user_card[i]);
