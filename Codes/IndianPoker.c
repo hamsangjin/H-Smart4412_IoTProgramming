@@ -394,7 +394,7 @@ int tactsw_get_with_timer(int t_second){
 				//입력값이 1~12 사이일 경우            
             	if(1<=b && b<=12){
             		switch (b){
-					case 1:  selected_tact = 1 ; print("PRESS 1"); usleep(1000000); break;
+					case 1:  selected_tact = 1 ; break;
 					case 2:  selected_tact = 2 ; break;
 					case 3:  selected_tact = 3 ; break;
 					case 4:  selected_tact = 4 ; break;
@@ -417,11 +417,11 @@ int tactsw_get_with_timer(int t_second){
 					//12를 눌렀지만 이전에 1~5을 누르지 않았을 경우 
 					else {
 						printf("press 12 after  press 1 ~ 5");
-						print("press 12 after  press 1 ~ 5"); usleep(5000000);
+						// print("press 12 after  press 1 ~ 5"); usleep(5000000);
 					}
 					}
 					//6~11무시 
-					default: printf("press other key"); print("press other key"); usleep(5000000);	 break; 	            
+					default: printf("press other key"); break; 	//print("press other key"); usleep(5000000);	             
 					}	
 				}
 		
@@ -536,7 +536,7 @@ void start(int* cards1, int* cards2){
 		print("      GAME           START!     ");  usleep(1500000);
 		print("  INDIAN POKER     GAME  RULE   ");  usleep(1500000);
 		print("     ON THE       TACT  SWITCH  ");  usleep(1500000);
-		print("1ST, 2ND, 3RD IS  HINT  BUTTON  ");  usleep(1500000);
+		print("1ST, 2ND, 3RD IS BETTING BUTTON ");  usleep(1500000);
 		print("   1ST BUTTON     PLAYER = COM  ");  usleep(1500000);
 		print("   2ND BUTTON     PLAYER < COM  ");  usleep(1500000);
 		print("   3RD BUTTON     PLAYER > COM  ");  usleep(1500000);
