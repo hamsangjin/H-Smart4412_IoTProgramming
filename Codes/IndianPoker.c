@@ -80,6 +80,9 @@ int fnds;
 // 재시작했을 때 룰 출력 안 하기 위한 룰 카운트 생성
 int rule_count = 1;
 
+//힌트 제공 개수 
+int hint_count[2];
+
 // ChipLED 16진수 값들 미리 선언
 char led_array[] = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00};
 
@@ -209,7 +212,7 @@ void ascending(int arr[], int cnt) {
     }
 }
 
-int hint_count[2] = {1,1};
+
 // user의 베팅값을 가져와서 4나 5인지 확인 후 그에 맞는 힌트 출력
 void hint(int user_answer, int* user_card, int i) {
   int j=i;
@@ -412,10 +415,10 @@ int tactsw_get_with_timer(int t_second){
 						return selected_tact;
 					}
 					//12를 눌렀지만 이전에 1~5을 누르지 않았을 경우 
-					else print("press 12 after  press 1 ~ 5");
+					else print("press 12 after  press 1 ~ 5"); usleep(1000000);
 					}
 					//6~11무시 
-					default: print("press other key"); break; 		            
+					default: print("press other key"); usleep(1000000);	 break; 	            
 					}	
 				}
 		
@@ -599,9 +602,13 @@ void start(int* cards1, int* cards2){
   }
 }
 
+
+
 int main(){
 	while(1){
    		if(intro_key() != 0){
+			hint_count[0] = 1;
+			hint_count[1] = 1; 
 	    	prepare(usercards, comcards);
 	    	start(usercards, comcards);
 				print("    CONTINUE         GAME ?     ");	usleep(2000000);
