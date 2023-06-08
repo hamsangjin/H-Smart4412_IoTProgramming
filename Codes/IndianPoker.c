@@ -223,11 +223,12 @@ void hint(int user_answer, int* user_card, int i) {
 			}
       printf("not use card: %d\n", user_card[i]);
     }
-		ascending(hint_result);
-		int k;
-		for(k=0; j < size; k++){
-				writeToDotDevice(hint_result[k], 3000000);
-		}
+    printf("%d", hint_result);
+	ascending(hint_result);
+	int k;
+	for(k=0; j < size; k++){
+		writeToDotDevice(hint_result[k], 3000000);
+	}
     
     
   }
@@ -593,7 +594,7 @@ int main(){
    		if(intro_key() != 0){
 	    	prepare(usercards, comcards);
 	    	start(usercards, comcards);
-				print("    CONTINUE         GAME ?     ");
+				print("    CONTINUE         GAME ?     ");	usleep(2000000);
 
 			if (intro("   SWITCH  ON   NEW GAME STARTS!") == 0){
 			print("      GAME            END.      ");   usleep(2000000);
