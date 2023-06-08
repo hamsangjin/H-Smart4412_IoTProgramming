@@ -230,7 +230,7 @@ void hint(int user_answer, int* user_card, int i) {
 	ascending(hint_result, 13-j);
 	
 	int k;
-	for(k=0; k < 14-j; k++){
+	for(k=0; k < 13-j; k++){
 		printf("output : hint result[%d] = %d\n", k, hint_result[k]);
 		writeToDotDevice(hint_result[k], 1500000);
 	}
