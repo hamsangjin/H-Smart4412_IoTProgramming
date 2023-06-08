@@ -210,7 +210,6 @@ void hint(int user_answer, int* user_card, int i) {
   int j;
   char hint_result[32];
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
-	printf("%d",sizeof(user_card));
   if (user_answer == 4) {
   	
   	print("Click 4");
@@ -218,7 +217,7 @@ void hint(int user_answer, int* user_card, int i) {
     for (i; i < 13; i++) {
       int card = user_card[i];
       writeToDotDevice(card, 2000000);
-      printf("%d",card);
+      printf("not use card: %d\n",card);
       
     }
     
@@ -281,7 +280,7 @@ int betting_start(int com_card, int round, int* cards2){
 
 						//해당 라운드 카드부터 안 쓴 마지막 카드를 다시 섞기
 						// 굿 !! 이런식으로 하려고 고민했었는데 구현해주셨네
-						//shuffle_card(round, cards2);
+						shuffle_card(round, cards2);
 				}
 
 				//요청한 힌트 5의 잔여 힌트 남아있을 시 
@@ -582,11 +581,16 @@ void start(int* cards1, int* cards2){
 }
 
 int main(){
-   	if(intro_key() != 0){
-    	prepare(usercards, comcards);
-    	start(usercards, comcards);
+	while(1){
+   		if(intro_key() != 0){
+	    	prepare(usercards, comcards);
+	    	start(usercards, comcards);
+	
+			if (intro("CONTINUE GAME ?") == 0){
+			print("   GAME  END  ");   usleep(2000000);
+			return 0;
+			}
+		}
+		print("GAME END"); return 0;
 	}
-   	print("      GAME            END!      "); 
-  	return 0;
 }
-
