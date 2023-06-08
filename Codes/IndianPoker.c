@@ -218,16 +218,14 @@ void hint(int user_answer, int* user_card, int i) {
 		// 해당 라운드 카드부터 카드 배열 크기만큼까지 저장
     for (i; i < 13; i++) {
 			int t;
-			for(t=0; t<13-i; t++){
+			for(t=0; t<14-i; t++){
 				hint_result[t] = user_card[i];
 			}
-      printf("not use card: %d\n", user_card[i]);
+      	printf("not use card: %d\n", user_card[i]);
     }
-    
 	ascending(hint_result);
 	int k;
 	for(k=0; k < size; k++){
-		printf("hint result = %d", hint_result);
 		printf("hint result[%d] = %d", k, hint_result[k]);
 		writeToDotDevice(hint_result[k], 1500000);
 	}
