@@ -229,7 +229,7 @@ void hint(int user_answer, int* user_card, int i) {
     for (j = 0; j < i; j++) {
       int card = user_card[j];
       writeToDotDevice(card, 2000000);
-      
+      printf("use card: %d\n",card);
     }
     
   }
@@ -591,6 +591,8 @@ int main(){
 			return 0;
 			}
 		}
-		print("GAME END"); return 0;
+		else{
+			print("GAME END"); return 0;	
+		}
 	}
 }
