@@ -209,7 +209,7 @@ void ascending(int arr[], int cnt) {
     }
 }
 
-int hint_count[2] = {1,1};
+int hint_count[2] = {5,5};
 // user의 베팅값을 가져와서 4나 5인지 확인 후 그에 맞는 힌트 출력
 void hint(int user_answer, int* user_card, int i) {
   int j=i;
@@ -227,7 +227,7 @@ void hint(int user_answer, int* user_card, int i) {
       	printf("not use card: %d\n", user_card[i]);
     }
     
-	ascending(hint_result, 14-j);
+	ascending(hint_result, 13-j);
 	
 	int k;
 	for(k=0; k < 14-j; k++){
