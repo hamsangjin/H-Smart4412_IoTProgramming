@@ -198,8 +198,8 @@ void writeToDotDevice(int card, int time) {
 // 오름차순 함수
 void ascending(int arr[]) {        
     int i, j, tmp = 0;
-    for (i = 0; i < 10; i++) {
-        for (j = i; j < 10; j++) {
+    for (i = 0; i < 13; i++) {
+        for (j = i; j < 13; j++) {
             if (arr[i] > arr[j]) {
                 tmp = arr[i];
                 arr[i] = arr[j];
