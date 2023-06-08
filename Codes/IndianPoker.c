@@ -223,11 +223,13 @@ void hint(int user_answer, int* user_card, int i) {
 			}
       printf("not use card: %d\n", user_card[i]);
     }
-    printf("%d", hint_result);
+    
 	ascending(hint_result);
 	int k;
-	for(k=0; j < size; k++){
-		writeToDotDevice(hint_result[k], 3000000);
+	for(k=0; k < size; k++){
+		printf("hint result = %d", hint_result);
+		printf("hint result[%d] = %d", k, hint_result[k]);
+		writeToDotDevice(hint_result[k], 1500000);
 	}
     
     
@@ -237,7 +239,7 @@ void hint(int user_answer, int* user_card, int i) {
   	print("Click 5");
     for (j = 0; j < i; j++) {
       int card = user_card[j];
-      writeToDotDevice(card, 2000000);
+      writeToDotDevice(card, 1500000);
       printf("use card: %d\n",card);
     }
     
@@ -250,7 +252,7 @@ void hint(int user_answer, int* user_card, int i) {
 int betting_start(int com_card, int round, int* cards2){
     
     // COM 카드 확인 문구 
-   	print("   CHECK YOUR       COM CARD    ");
+   	print("   CHECK  THE       COM CARD    ");
 
     // COM 카드 출력 
     writeToDotDevice(com_card, 3000000);
