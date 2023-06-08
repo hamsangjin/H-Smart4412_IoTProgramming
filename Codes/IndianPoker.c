@@ -142,7 +142,7 @@ int intro_key(){
 	int dip_value = 0;
 	 
 	char first_msg[] = " PRESS ANY KEY!  USE DIP SWITCH ";
-    char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
+  char second_msg[] = " PRESS ANY KEY!  NO INPUT: QUIT ";
 	
 	//게임시작여부 묻기(첫번째  메시지로) 
 	dip_value = intro(first_msg);
@@ -163,7 +163,7 @@ int intro(char P[]){
 	print(P);
 	
 	// dip switch 10초 동안 입력했냐 안 했냐
-    int dip_value = 0;
+  int dip_value = 0;
 	dip_value =  dipsw_get_with_timer(10); 
 	printf("dip value: %d\n", dip_value);
 	
@@ -178,7 +178,7 @@ void print(char P[]){
 	close(clcds);
 }
 
-// dotmatrix 출력 함수(3초) time = 3초 
+// dotmatrix 출력 함수(출력할 하나의 카드, 출력 시간)
 void writeToDotDevice(int card, int time) {
     int dot_mtx = open(dot, O_RDWR);
     if (dot_mtx < 0) {
@@ -190,16 +190,18 @@ void writeToDotDevice(int card, int time) {
     close(dot_mtx);
 }
 
-// hint 카드 dotmatrix 출력 함수(2초) - 하나씩 출력해줄 때 3초는 너무 길어서 2초짜리 함수 생성
-void hint_dotmatrix(int card) {
-	int time = 2000000; 
-    writeToDotDevice(card, time);
-}
-// 컴퓨터, 유저 카드 dotmatrix 출력 함수(3초) 
-void show_dotmatrix(int card) {
-	int time = 3000000; 
-    writeToDotDevice(card, time);
-}
+
+// 도트매트릭스 기본 출력 함수가 time을 인자로 받으면 아래 함수들은 필요없는거 아닌가 ?
+// // hint 카드 dotmatrix 출력 함수(2초)
+// void hint_dotmatrix(int card) {
+// 	int time = 2000000; 
+//     writeToDotDevice(card, time);
+// }
+// // 컴퓨터, 유저 카드 dotmatrix 출력 함수(3초) 
+// void show_dotmatrix(int card) {
+// 	int time = 3000000; 
+//     writeToDotDevice(card, time);
+// }
 
 
 int hint_count[2] = {1,1};
@@ -209,20 +211,26 @@ void hint(int user_answer, int* user_card, int i) {
   char hint_result[32];
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
   if (user_answer == 4) {
+  	
+  	print("Click 4");
+		// 해당 라운드 카드부터 카드 배열 크기만큼 츌력
     for (i; i < sizeof(user_card) / sizeof(int); i++) {
       int card = user_card[i];
-      hint_dotmatrix(card);
-      hint_count[0]--; 
+      writeToDotDevice(card, 2000000);
+      
     }
+    
     
   }
 	// 5인 경우 지금까지 사용한 카드를 출력
   else if (user_answer == 5) {
+  	print("Click 5");
     for (j = 0; j < i; j++) {
       int card = user_card[j];
-      hint_dotmatrix(card);
-      hint_count[1]--;
+      writeToDotDevice(card, 2000000);
+      
     }
+    
   }
 }
 
@@ -235,51 +243,59 @@ int betting_start(int com_card, int round, int* cards2){
    	print("   CHECK YOUR       COM CARD    ");
 
     // COM 카드 출력 
-    show_dotmatrix(com_card);
+    writeToDotDevice(com_card, 3000000);
     
-	print(" PLEASE BETTING  USE TACTSWITCH ");
 	
-    
+	
     int user_answer = 0; int bet_answer = 0;
-	while(1){
-		
-		// tactswitch 베팅 입력, fnd 10초 시작
-		int user_answer = tactsw_get_with_timer(10); 
-		
-		//유저가 베팅했을 경우 
-		int user_bet = user_answer ==0 ||user_answer ==1 || user_answer ==2 ||user_answer ==3;
-		
-		//유저가 힌트를 요청했을 경우 
-		int user_hint = user_answer == 4 || user_answer == 5;
-		//베팅값 입력시 베팅값 반환 
-		if(user_bet){
-			bet_answer = user_answer;
-			return bet_answer; 
-		}
-		//힌트 요청시 베팅 재진행 
-		else if(user_hint){
-			//요청한 힌트 4의 잔여 힌트 남아있을 시 
-			if(user_answer == 4 && hint_count[0] == 1){
-					//힌트 함수 호출 
-					hint(4,cards2, round);
-					hint_count[0]--;
-					//해당 라운드 카드부터 안 쓴 마지막 카드를 다시 섞기 
-					shuffle_card(round, cards2);
-			}
-			//요청한 힌트 5의 잔여 힌트 남아있을 시 
-			else if(user_answer == 5 && hint_count[1] == 1){
-					//힌트 함수 호출 
-					hint(5,cards2, round);
-					hint_count[1]--;
-			}
-			//잔여 힌트 남아있지 않을 시 
-			else	
-			{
-				print(" HINT COUNT = 0  CAN'T USE HINT ");	usleep(2000000);
-			}
-		}
+		while(1){
 			
-	}	
+			print(" PLEASE BETTING  USE TACTSWITCH ");
+			
+			// tactswitch 베팅 입력, fnd 10초 시작
+			int user_answer = tactsw_get_with_timer(10); 
+			
+			//유저가 베팅했을 경우 
+			int user_bet = user_answer ==0 ||user_answer ==1 || user_answer ==2 ||user_answer ==3;
+			
+			//유저가 힌트를 요청했을 경우 
+			int user_hint = user_answer == 4 || user_answer == 5;
+
+			//베팅값 입력시 베팅값 반환 
+			if(user_bet){
+				bet_answer = user_answer;
+				return bet_answer; 
+			}
+
+			//힌트 요청시 베팅 재진행 
+			else if(user_hint){
+				//요청한 힌트 4의 잔여 힌트 남아있을 시 
+				if(user_answer == 4 && hint_count[0] == 1){
+
+						//힌트 함수 호출
+						 
+						hint(4,cards2, round);
+						hint_count[0]--;
+
+						//해당 라운드 카드부터 안 쓴 마지막 카드를 다시 섞기
+						// 굿 !! 이런식으로 하려고 고민했었는데 구현해주셨네
+						shuffle_card(round, cards2);
+				}
+
+				//요청한 힌트 5의 잔여 힌트 남아있을 시 
+				else if(user_answer == 5 && hint_count[1] == 1){
+						//힌트 함수 호출 
+						hint(5,cards2, round);
+						hint_count[1]--;
+				}
+
+				//잔여 힌트 남아있지 않을 시 
+				else	
+				{
+					print(" HINT COUNT = 0  CAN'T USE HINT ");	usleep(2000000);
+				}
+			}
+		}	
 }
 
 
@@ -525,10 +541,10 @@ void start(int* cards1, int* cards2){
     // betting_start 함수 호출해 user_answer에 베팅 값 저장
     int user_answer = betting_start(com_card, i, cards2);         // 베팅 값 저장
 		
-	print("  BETTING DONE  CHECK  YOUR CARD");
+		print("  BETTING DONE  CHECK  YOUR CARD");
 
     // 사용자 카드 공개(3초)
-    show_dotmatrix(user_card);
+    writeToDotDevice(user_card, 3000000);
 
     // 카드 비교 결과 저장
     int correct_answer = compare_card(com_card, user_card);    
@@ -571,3 +587,4 @@ int main(){
    	print("      GAME            END!      "); 
   	return 0;
 }
+
