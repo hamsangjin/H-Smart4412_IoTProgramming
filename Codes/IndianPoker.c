@@ -284,7 +284,7 @@ int betting_start(int com_card, int round, int* cards2){
 			//힌트 요청시 베팅 재진행 
 			else if(user_hint){
 				//요청한 힌트 4의 잔여 힌트 남아있을 시 
-				if(user_answer == 4 && hint_count[0] == 1){
+				if(user_answer == 4 && hint_count[0] >= 1){
 
 						//힌트 함수 호출
 						 
@@ -297,7 +297,7 @@ int betting_start(int com_card, int round, int* cards2){
 				}
 
 				//요청한 힌트 5의 잔여 힌트 남아있을 시 
-				else if(user_answer == 5 && hint_count[1] == 1){
+				else if(user_answer == 5 && hint_count[1] >= 1){
 						//힌트 함수 호출 
 						hint(5,cards2, round);
 						hint_count[1]--;
