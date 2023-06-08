@@ -60,7 +60,7 @@ void hint_dotmatrix(int card);
 void show_dotmatrix(int card);
 
 // 오름차순 정렬
-void ascending(int arr[]);
+void ascending(int arr[], int cnt);
 
 // 유저의 승리 개수만큼 Chip LED를 켜주는 함수
 void led_on(int user_score);
@@ -196,10 +196,10 @@ void writeToDotDevice(int card, int time) {
 }
 
 // 오름차순 함수
-void ascending(int arr[]) {        
+void ascending(int arr[], int cnt) {        
     int i, j, tmp = 0;
-    for (i = 0; i < 13; i++) {
-        for (j = i; j < 13; j++) {
+    for (i = 0; i < cnt; i++) {
+        for (j = i; j < cnt; j++) {
             if (arr[i] > arr[j]) {
                 tmp = arr[i];
                 arr[i] = arr[j];
@@ -218,17 +218,20 @@ void hint(int user_answer, int* user_card, int i) {
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
   if (user_answer == 4) {
   	print("Click 4");
-		int cnt = 0;
+	int cnt = 0;
 		// 해당 라운드 카드부터 카드 배열 크기만큼까지 저장
     for (i; i < 13; i++) {
-			hint_result[cnt] = user_card[i];
-			cnt = cnt + 1;
-      printf("not use card: %d\n", user_card[i]);
+		hint_result[cnt] = user_card[i];
+		printf("save : hint_result[%d] = %d", cnt, user_card[i]);
+		cnt = cnt + 1;
+      	printf("not use card: %d\n", user_card[i]);
     }
-	ascending(hint_result);
+    
+	ascending(hint_result, 14-i);
+	
 	int k;
 	for(k=0; k < 14-i; k++){
-		printf("hint result[%d] = %d\n", k, hint_result[k]);
+		printf("output : hint result[%d] = %d\n", k, hint_result[k]);
 		writeToDotDevice(hint_result[k], 1500000);
 	}
     
