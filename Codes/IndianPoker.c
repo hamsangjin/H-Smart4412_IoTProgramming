@@ -218,14 +218,12 @@ void hint(int user_answer, int* user_card, int i) {
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
   if (user_answer == 4) {
   	print("Click 4");
+		int cnt = 0;
 		// 해당 라운드 카드부터 카드 배열 크기만큼까지 저장
     for (i; i < 13; i++) {
-			int t;
-			for(t=0; t<14-i; t++){
-				printf("hint_result[%d] = %d", t, hint_result[t]);
-				hint_result[t] = user_card[i];
-			}
-      	printf("not use card: %d\n", user_card[i]);
+			hint_result[cnt] = user_card[i];
+			cnt = cnt + 1;
+      printf("not use card: %d\n", user_card[i]);
     }
 	ascending(hint_result);
 	int k;
