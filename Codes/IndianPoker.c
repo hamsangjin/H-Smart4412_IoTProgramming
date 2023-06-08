@@ -394,7 +394,7 @@ int tactsw_get_with_timer(int t_second){
 				//입력값이 1~12 사이일 경우            
             	if(1<=b && b<=12){
             		switch (b){
-					case 1:  selected_tact = 1 ; break;
+					case 1:  selected_tact = 1 ; print("PRESS 1"); usleep(1000000); break;
 					case 2:  selected_tact = 2 ; break;
 					case 3:  selected_tact = 3 ; break;
 					case 4:  selected_tact = 4 ; break;
