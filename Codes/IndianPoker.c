@@ -279,7 +279,7 @@ int betting_start(int com_card, int round, int* cards2){
 
 						//해당 라운드 카드부터 안 쓴 마지막 카드를 다시 섞기
 						// 굿 !! 이런식으로 하려고 고민했었는데 구현해주셨네
-						shuffle_card(round, cards2);
+						//shuffle_card(round, cards2);
 				}
 
 				//요청한 힌트 5의 잔여 힌트 남아있을 시 
