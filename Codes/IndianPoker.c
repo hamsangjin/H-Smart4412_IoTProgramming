@@ -210,13 +210,15 @@ void hint(int user_answer, int* user_card, int i) {
   int j;
   char hint_result[32];
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
+	printf("%d",sizeof(user_card));
   if (user_answer == 4) {
   	
   	print("Click 4");
 		// 해당 라운드 카드부터 카드 배열 크기만큼 츌력
-    for (i; i < sizeof(user_card) / sizeof(int); i++) {
+    for (i; i < 13; i++) {
       int card = user_card[i];
       writeToDotDevice(card, 2000000);
+      printf("%d",card);
       
     }
     
