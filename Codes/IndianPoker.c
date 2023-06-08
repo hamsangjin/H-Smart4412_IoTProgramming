@@ -212,7 +212,7 @@ void ascending(int arr[], int cnt) {
 int hint_count[2] = {1,1};
 // user의 베팅값을 가져와서 4나 5인지 확인 후 그에 맞는 힌트 출력
 void hint(int user_answer, int* user_card, int i) {
-  int j;
+  int j=i;
   int hint_result[13] = {};
 	// int size = sizeof(hint_result) / sizeof(int);
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
@@ -227,10 +227,10 @@ void hint(int user_answer, int* user_card, int i) {
       	printf("not use card: %d\n", user_card[i]);
     }
     
-	ascending(hint_result, 14-i);
+	ascending(hint_result, 14-j);
 	
 	int k;
-	for(k=0; k < 14-i; k++){
+	for(k=0; k < 14-j; k++){
 		printf("output : hint result[%d] = %d\n", k, hint_result[k]);
 		writeToDotDevice(hint_result[k], 1500000);
 	}
