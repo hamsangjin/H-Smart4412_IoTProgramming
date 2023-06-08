@@ -59,6 +59,8 @@ void hint_dotmatrix(int card);
 // 랜덤으로 섞은 유저와 컴퓨터의 카드를 DotMatrix로 보여주는 함수
 void show_dotmatrix(int card);
 
+// 오름차순 정렬
+void ascending(int arr[]);
 
 // 유저의 승리 개수만큼 Chip LED를 켜주는 함수
 void led_on(int user_score);
@@ -190,36 +192,42 @@ void writeToDotDevice(int card, int time) {
     close(dot_mtx);
 }
 
-
-// 도트매트릭스 기본 출력 함수가 time을 인자로 받으면 아래 함수들은 필요없는거 아닌가 ?
-// // hint 카드 dotmatrix 출력 함수(2초)
-// void hint_dotmatrix(int card) {
-// 	int time = 2000000; 
-//     writeToDotDevice(card, time);
-// }
-// // 컴퓨터, 유저 카드 dotmatrix 출력 함수(3초) 
-// void show_dotmatrix(int card) {
-// 	int time = 3000000; 
-//     writeToDotDevice(card, time);
-// }
-
+// 오름차순 함수
+void ascending(int arr[]) {        
+    int i, j, tmp = 0;
+    for (i = 0; i < 10; i++) {
+        for (j = i; j < 10; j++) {
+            if (arr[i] > arr[j]) {
+                tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
+            }
+        }
+    }
+}
 
 int hint_count[2] = {1,1};
 // user의 베팅값을 가져와서 4나 5인지 확인 후 그에 맞는 힌트 출력
 void hint(int user_answer, int* user_card, int i) {
   int j;
-  char hint_result[32];
+  int hint_result[13] = {};
+	int size = sizeof(hint_result) / sizeof(int);
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
   if (user_answer == 4) {
-  	
   	print("Click 4");
-		// 해당 라운드 카드부터 카드 배열 크기만큼 츌력
+		// 해당 라운드 카드부터 카드 배열 크기만큼까지 저장
     for (i; i < 13; i++) {
-      int card = user_card[i];
-      writeToDotDevice(card, 2000000);
-      printf("not use card: %d\n",card);
-      
+			int t;
+			for(t=0; t<13-i; t++){
+				hint_result[t] = user_card[i];
+			}
+      printf("not use card: %d\n", user_card[i]);
     }
+		ascending(hint_result);
+		int k;
+		for(k=0; j < size; k++){
+				writeToDotDevice(hint_result[k], 3000000);
+		}
     
     
   }
@@ -514,7 +522,7 @@ void start(int* cards1, int* cards2){
 
   // Game Rule 설명
   print("      GAME           START!     ");  usleep(2000000);
-  print("  INDIAN  POKER     GAME  RULE   ");  usleep(2000000);
+  print("  INDIAN POKER     GAME  RULE   ");  usleep(2000000);
   print("     ON THE       TACT  SWITCH  ");  usleep(2000000);
   print("   1ST BUTTON     PLAYER = COM  ");  usleep(2000000);
   print("   2ND BUTTON     PLAYER < COM  ");  usleep(2000000);
@@ -585,14 +593,15 @@ int main(){
    		if(intro_key() != 0){
 	    	prepare(usercards, comcards);
 	    	start(usercards, comcards);
-	
-			if (intro("CONTINUE GAME ?") == 0){
-			print("   GAME  END  ");   usleep(2000000);
+				print("    CONTINUE         GAME ?     ");
+
+			if (intro("   SWITCH  ON   NEW GAME STARTS!") == 0){
+			print("      GAME            END.      ");   usleep(2000000);
 			return 0;
 			}
 		}
 		else{
-			print("GAME END"); return 0;	
+			print("      GAME            END.      "); return 0;	
 		}
 	}
 }
