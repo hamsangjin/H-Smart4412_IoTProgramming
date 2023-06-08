@@ -415,10 +415,13 @@ int tactsw_get_with_timer(int t_second){
 						return selected_tact;
 					}
 					//12를 눌렀지만 이전에 1~5을 누르지 않았을 경우 
-					else print("press 12 after  press 1 ~ 5"); usleep(1000000);
+					else {
+						printf("press 12 after  press 1 ~ 5");
+						print("press 12 after  press 1 ~ 5"); usleep(5000000);
+					}
 					}
 					//6~11무시 
-					default: print("press other key"); usleep(1000000);	 break; 	            
+					default: printf("press other key"); print("press other key"); usleep(5000000);	 break; 	            
 					}	
 				}
 		
