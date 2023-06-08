@@ -78,7 +78,7 @@ int clcds;
 int fnds;
 
 // 재시작했을 때 룰 출력 안 하기 위한 룰 카운트 생성
-int rule_count = 0;
+int rule_count = 1;
 
 // ChipLED 16진수 값들 미리 선언
 char led_array[] = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00};
@@ -209,7 +209,7 @@ void ascending(int arr[], int cnt) {
     }
 }
 
-int hint_count[2] = {5,5};
+int hint_count[2] = {1,1};
 // user의 베팅값을 가져와서 4나 5인지 확인 후 그에 맞는 힌트 출력
 void hint(int user_answer, int* user_card, int i) {
   int j=i;
@@ -217,7 +217,7 @@ void hint(int user_answer, int* user_card, int i) {
 	// int size = sizeof(hint_result) / sizeof(int);
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
   if (user_answer == 4) {
-  	print("Click 4");
+  	print(" DISPLAY UNUSED   PLAYER  CARD  ");
 	int cnt = 0;
 		// 해당 라운드 카드부터 카드 배열 크기만큼까지 저장
     for (i; i < 13; i++) {
@@ -238,7 +238,7 @@ void hint(int user_answer, int* user_card, int i) {
   }
 	// 5인 경우 지금까지 사용한 카드를 출력
   else if (user_answer == 5) {
-  	print("Click 5");
+  	print("  DISPLAY USED    PLAYER  CARD  ");
     for (j = 0; j < i; j++) {
       int card = user_card[j];
       writeToDotDevice(card, 1500000);
@@ -412,10 +412,10 @@ int tactsw_get_with_timer(int t_second){
 						return selected_tact;
 					}
 					//12를 눌렀지만 이전에 1~5을 누르지 않았을 경우 
-					else printf("press 12 after press 1 ~ 5\n");
+					else PRINT("press 12 after  press 1 ~ 5");
 					}
 					//6~11무시 
-					default: printf("press other key\n"); break; 		            
+					default: PRINT("press other key"); break; 		            
 					}	
 				}
 		
@@ -527,16 +527,19 @@ void start(int* cards1, int* cards2){
 
 	if (rule_count >= 1){
 		// Game Rule 설명
-		print("      GAME           START!     ");  usleep(2000000);
-		print("  INDIAN POKER     GAME  RULE   ");  usleep(2000000);
-		print("     ON THE       TACT  SWITCH  ");  usleep(2000000);
-		print("   1ST BUTTON     PLAYER = COM  ");  usleep(2000000);
-		print("   2ND BUTTON     PLAYER < COM  ");  usleep(2000000);
-		print("   3RD BUTTON     PLAYER > COM  ");  usleep(2000000);
-		print("   4th BUTTON     UNUSED  CARD  ");  usleep(2000000);
-		print("   5th BUTTON      USED  CARD   ");  usleep(2000000);
-		print("  12TH  BUTTON       CHOOSE     ");  usleep(2000000);
-		print("  THE  HINT IS    GIVEN  TWICE  ");	usleep(2000000);
+		print("      GAME           START!     ");  usleep(1500000);
+		print("  INDIAN POKER     GAME  RULE   ");  usleep(1500000);
+		print("     ON THE       TACT  SWITCH  ");  usleep(1500000);
+		print("1ST, 2ND, 3RD IS  HINT  BUTTON  ");  usleep(1500000);
+		print("   1ST BUTTON     PLAYER = COM  ");  usleep(1500000);
+		print("   2ND BUTTON     PLAYER < COM  ");  usleep(1500000);
+		print("   3RD BUTTON     PLAYER > COM  ");  usleep(1500000);
+		print("  4TH, 5TH  IS    HINT  BUTTON  ");  usleep(1500000);
+		print("  THE  HINT IS    GIVEN  TWICE  ");	usleep(1500000);
+		print("   4TH BUTTON   SHOW UNUSED CARD");  usleep(1500000);
+		print("   5TH BUTTON    SHOW USED CARD ");  usleep(1500000);
+		print("  12TH  BUTTON       CHOOSE     ");  usleep(1500000);
+
 		rule_count = rule_count - 1;
 	}
 
@@ -603,7 +606,7 @@ int main(){
 	    	start(usercards, comcards);
 				print("    CONTINUE         GAME ?     ");	usleep(2000000);
 
-			if (intro("   SWITCH  ON   NEW GAME STARTS!") == 0){
+			if (intro(" DIP SWITCH  ON NEW GAME STARTS!") == 0){
 			print("      GAME            END.      ");   usleep(2000000);
 			return 0;
 			}
