@@ -77,6 +77,9 @@ int tactsw;
 int clcds;
 int fnds;
 
+// 재시작했을 때 룰 출력 안 하기 위한 룰 카운트 생성
+int rule_count = 1;
+
 // ChipLED 16진수 값들 미리 선언
 char led_array[] = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00};
 
@@ -211,7 +214,7 @@ int hint_count[2] = {1,1};
 void hint(int user_answer, int* user_card, int i) {
   int j;
   int hint_result[13] = {};
-	int size = sizeof(hint_result) / sizeof(int);
+	// int size = sizeof(hint_result) / sizeof(int);
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
   if (user_answer == 4) {
   	print("Click 4");
@@ -225,11 +228,10 @@ void hint(int user_answer, int* user_card, int i) {
     }
 	ascending(hint_result);
 	int k;
-	for(k=0; k < size; k++){
-		printf("hint result[%d] = %d", k, hint_result[k]);
+	for(k=0; k < 14-i; k++){
+		printf("hint result[%d] = %d\n", k, hint_result[k]);
 		writeToDotDevice(hint_result[k], 1500000);
 	}
-    
     
   }
 	// 5인 경우 지금까지 사용한 카드를 출력
@@ -519,19 +521,22 @@ void start(int* cards1, int* cards2){
   int user_score = 0;
   char round_clcd[32];
   char score_clcd[32];
+	
 
-
-  // Game Rule 설명
-  print("      GAME           START!     ");  usleep(2000000);
-  print("  INDIAN POKER     GAME  RULE   ");  usleep(2000000);
-  print("     ON THE       TACT  SWITCH  ");  usleep(2000000);
-  print("   1ST BUTTON     PLAYER = COM  ");  usleep(2000000);
-  print("   2ND BUTTON     PLAYER < COM  ");  usleep(2000000);
-  print("   3RD BUTTON     PLAYER > COM  ");  usleep(2000000);
-	print("   4th BUTTON     UNUSED  CARD  ");  usleep(2000000);
-	print("   5th BUTTON      USED  CARD   ");  usleep(2000000);
-  print("  12TH  BUTTON       CHOOSE     ");  usleep(2000000);
-	print("  THE  HINT IS    GIVEN  TWICE  ");	usleep(2000000);
+	if (rule_count >= 1){
+		// Game Rule 설명
+		print("      GAME           START!     ");  usleep(2000000);
+		print("  INDIAN POKER     GAME  RULE   ");  usleep(2000000);
+		print("     ON THE       TACT  SWITCH  ");  usleep(2000000);
+		print("   1ST BUTTON     PLAYER = COM  ");  usleep(2000000);
+		print("   2ND BUTTON     PLAYER < COM  ");  usleep(2000000);
+		print("   3RD BUTTON     PLAYER > COM  ");  usleep(2000000);
+		print("   4th BUTTON     UNUSED  CARD  ");  usleep(2000000);
+		print("   5th BUTTON      USED  CARD   ");  usleep(2000000);
+		print("  12TH  BUTTON       CHOOSE     ");  usleep(2000000);
+		print("  THE  HINT IS    GIVEN  TWICE  ");	usleep(2000000);
+		rule_count = rule_count - 1;
+	}
 
   // Round 반복
   int i;
