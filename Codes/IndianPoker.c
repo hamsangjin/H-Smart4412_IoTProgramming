@@ -53,12 +53,6 @@ int dipsw_get_with_timer(int t_second);
 // DotMatrix에 카드를 보여주는 함수 
 void writeToDotDevice(int card, int time);
 
-// 힌트 카드를 DotMatrix로 보여주는 함수 
-void hint_dotmatrix(int card);
-
-// 랜덤으로 섞은 유저와 컴퓨터의 카드를 DotMatrix로 보여주는 함수
-void show_dotmatrix(int card);
-
 // 오름차순 정렬
 void ascending(int arr[], int cnt);
 
@@ -69,7 +63,8 @@ void led_on(int user_score);
 int intro_key();
 int intro(char p[]);
 
-// 장치들 전역 변수 설정
+// 전역 변수
+// 입출력장치
 int dipsw;
 int leds;
 int dot_mtx;
@@ -80,10 +75,10 @@ int fnds;
 // 재시작했을 때 룰 출력 안 하기 위한 룰 카운트 생성
 int rule_count = 1;
 
-//힌트 제공 개수 
+// 힌트 횟수 전역변수 설정
 int hint_count[2];
 
-// ChipLED 16진수 값들 미리 선언
+// ChipLED 16진수 값
 char led_array[] = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00};
 
 //카드 관련 전역 변수 설정
@@ -93,6 +88,7 @@ int comcards[CARD_NUM] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 
 // fnd led 관련 전역 변수 설정
 unsigned char fnd_num[4] = {0,};
+
 //0,1,2,3,4,5,6,7,8,9,turn off
 unsigned char Time_Table[11] = {~0x3f, ~0x06, ~0x5b, ~0x4f, ~0x66, ~0x6d, ~0x7d, ~0x07, ~0x7f, ~0x67, ~0x00};
 
@@ -128,12 +124,12 @@ unsigned char deck[13][8] = {
 
 // ChipLED 출력(5초) 함수
 void led_on(int user_score){
-  unsigned char data;
+	unsigned char data;
 
 	// chip led 불러오기
   leds = open(led, O_RDWR);
   if (leds < 0) {
-    printf("Can't open LED.\n");
+  	printf("Can't open LED.\n");
     exit(0);
   }
 
@@ -188,131 +184,118 @@ void print(char P[]){
 
 // dotmatrix 출력 함수(출력할 하나의 카드, 출력 시간)
 void writeToDotDevice(int card, int time) {
-    int dot_mtx = open(dot, O_RDWR);
-    if (dot_mtx < 0) {
-    	printf("Cannot open dot device\n");
-        exit(0);
-    }
-    write(dot_mtx, &deck[card-1], sizeof(deck[card-1]));
-    usleep(time);
-    close(dot_mtx);
+	int dot_mtx = open(dot, O_RDWR);
+	if (dot_mtx < 0) {
+		printf("Cannot open dot device\n");
+		exit(0);
+	}
+	write(dot_mtx, &deck[card-1], sizeof(deck[card-1]));
+	usleep(time);
+	close(dot_mtx);
 }
 
 // 오름차순 함수
 void ascending(int arr[], int cnt) {        
-    int i, j, tmp = 0;
-    for (i = 0; i < cnt; i++) {
-        for (j = i; j < cnt; j++) {
-            if (arr[i] > arr[j]) {
-                tmp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = tmp;
-            }
-        }
-    }
+	int i, j, tmp = 0;
+	for (i = 0; i < cnt; i++) {
+		for (j = i; j < cnt; j++) {
+			if (arr[i] > arr[j]) {
+				tmp = arr[i];
+				arr[i] = arr[j];
+				arr[j] = tmp;
+			}
+		}
+	}
 }
-
 
 // user의 베팅값을 가져와서 4나 5인지 확인 후 그에 맞는 힌트 출력
-void hint(int user_answer, int* user_card, int i) {
-  int j=i;
+void hint(int user_answer, int* user_card, int round) {
   int hint_result[13] = {};
-	// int size = sizeof(hint_result) / sizeof(int);
+
 	// 4인 경우 해당 라운드 카드부터 안쓴 카드까지 쭉 출력
   if (user_answer == 4) {
+		int j=round;
   	print(" DISPLAY UNUSED   PLAYER  CARD  ");
-	int cnt = 0;
+		
+		int cnt = 0;
+
 		// 해당 라운드 카드부터 카드 배열 크기만큼까지 저장
-    for (i; i < 13; i++) {
-		hint_result[cnt] = user_card[i];
-		printf("save : hint_result[%d] = %d", cnt, user_card[i]);
-		cnt = cnt + 1;
-      	printf("not use card: %d\n", user_card[i]);
+    for (round; round < 13; round++) {
+			hint_result[cnt] = user_card[round];
+			cnt = cnt + 1;
     }
+  
+		// 힌트 저장되어 있는 배열 오름차순 정렬
+		ascending(hint_result, 13-j);
+		
+		int k;
+		for(k=0; k < 13-j; k++){
+			writeToDotDevice(hint_result[k], 1500000);
+		}
     
-	ascending(hint_result, 13-j);
-	
-	int k;
-	for(k=0; k < 13-j; k++){
-		printf("output : hint result[%d] = %d\n", k, hint_result[k]);
-		writeToDotDevice(hint_result[k], 1500000);
-	}
-    
-  }
-	// 5인 경우 지금까지 사용한 카드를 출력
-  else if (user_answer == 5) {
-  	print("  DISPLAY USED    PLAYER  CARD  ");
-    for (j = 0; j < i; j++) {
-      int card = user_card[j];
-      writeToDotDevice(card, 1500000);
-      printf("use card: %d\n",card);
-    }
-    
-  }
 }
 
-
+	// 5인 경우 지금까지 사용한 카드를 출력
+  else if (user_answer == 5) {
+		int j;
+  	print("  DISPLAY USED    PLAYER  CARD  ");
+    for (j = 0; j < round; j++) {
+      int card = user_card[j];
+      writeToDotDevice(card, 1500000);
+    }
+  }
+}
 
 // BETTTING할 때 호출하는 함수
 int betting_start(int com_card, int round, int* cards2){
-    
-    // COM 카드 확인 문구 
-   	print("   CHECK  THE       COM CARD    ");
 
-    // COM 카드 출력 
-    writeToDotDevice(com_card, 3000000);
-    
-	
-	
-    int user_answer = 0; int bet_answer = 0;
-		while(1){
-			
-			print(" PLEASE BETTING  USE TACTSWITCH ");
-			
-			// tactswitch 베팅 입력, fnd 10초 시작
-			int user_answer = tactsw_get_with_timer(10); 
-			
-			//유저가 베팅했을 경우 
-			int user_bet = user_answer ==0 ||user_answer ==1 || user_answer ==2 ||user_answer ==3;
-			
-			//유저가 힌트를 요청했을 경우 
-			int user_hint = user_answer == 4 || user_answer == 5;
+	// COM 카드 확인 문구 
+	print("   CHECK  THE       COM CARD    ");
 
-			//베팅값 입력시 베팅값 반환 
-			if(user_bet){
-				bet_answer = user_answer;
-				return bet_answer; 
+	// COM 카드 출력 
+	writeToDotDevice(com_card, 3000000);
+	
+	int user_answer, bet_answer = 0;
+	while(1){
+		print(" PLEASE BETTING  USE TACTSWITCH ");
+		
+		// tactswitch 베팅 입력, fnd 10초 시작
+		int user_answer = tactsw_get_with_timer(10); 
+		
+		//유저가 베팅했을 경우 
+		int user_bet = user_answer ==0 ||user_answer ==1 || user_answer ==2 ||user_answer ==3;
+		
+		//유저가 힌트를 요청했을 경우 
+		int user_hint = user_answer == 4 || user_answer == 5;
+
+		//베팅값 입력시 베팅값 반환 
+		if(user_bet){
+			bet_answer = user_answer;
+			return bet_answer; 
+		}
+
+		//힌트 요청시 베팅 재진행 
+		else if(user_hint){
+			//요청한 힌트 4의 잔여 힌트 남아있을 시 
+			if(user_answer == 4 && hint_count[0] >= 1){
+					//힌트 함수 호출
+					hint(4,cards2, round);
+					hint_count[0]--;
 			}
 
-			//힌트 요청시 베팅 재진행 
-			else if(user_hint){
-				//요청한 힌트 4의 잔여 힌트 남아있을 시 
-				if(user_answer == 4 && hint_count[0] >= 1){
-
-						//힌트 함수 호출
-						 
-						hint(4,cards2, round);
-						hint_count[0]--;
-
-						//해당 라운드 카드부터 안 쓴 마지막 카드를 다시 섞기
-						// 굿 !! 이런식으로 하려고 고민했었는데 구현해주셨네
-						shuffle_card(round, cards2);
-				}
-
-				//요청한 힌트 5의 잔여 힌트 남아있을 시 
-				else if(user_answer == 5 && hint_count[1] >= 1){
-						//힌트 함수 호출 
-						hint(5,cards2, round);
-						hint_count[1]--;
-				}
-
-				//잔여 힌트 남아있지 않을 시 
-				else	
-				{
-					print(" HINT COUNT = 0  CAN'T USE HINT ");	usleep(2000000);
-				}
+			//요청한 힌트 5의 잔여 힌트 남아있을 시 
+			else if(user_answer == 5 && hint_count[1] >= 1){
+					//힌트 함수 호출 
+					hint(5,cards2, round);
+					hint_count[1]--;
 			}
-		}	
+
+			//잔여 힌트 남아있지 않을 시 
+			else{
+				print(" HINT COUNT = 0  CAN'T USE HINT ");	usleep(2000000);
+			}
+		}
+	}	
 }
 
 
@@ -337,31 +320,31 @@ void shuffle_card(int start, int* cards){
 // 게임 준비 함수
 void prepare(int* cards1, int* cards2){
 	shuffle_card(0,cards1);
-   	shuffle_card(0,cards2);
-   	shuffle_card(0,cards2); // 다르게 섞이기 위해 한 번 더 셔플
+  shuffle_card(0,cards2);
+  shuffle_card(0,cards2); // 다르게 섞이기 위해 한 번 더 셔플
 }
 
 //게임 카드 비교 함수   
 int compare_card(int com_card, int user_card){
-   if(com_card==user_card){
-      return 1;
-   }
-   else if(com_card>user_card){
-      return 2;
-   }
-   else{
-      return 3;
-   }
+	if(com_card==user_card){
+		return 1;
+	}
+	else if(com_card>user_card){
+		return 2;
+	}
+	else{
+		return 3;
+	}
 }
 
 //게임 OX반환 함수      
 int win_lose(int user_answer, int correct_answer){
-   if(user_answer == correct_answer){
-      return 1;
-   }
-   else{
-      return 0;
-   }
+	if(user_answer == correct_answer){
+		return 1;
+	}
+	else{
+		return 0;
+	}
 }
 
 //입력된 시간(초) 동안 tactsw가 값을 읽고(0.01초 마다 read), 
@@ -380,7 +363,8 @@ int tactsw_get_with_timer(int t_second){
 		printf("tact open error");
 		return 0;
 	}
-	if((fnds = open(fnd,O_RDWR)) <0){
+
+	if((fnds = open(fnd,O_RDWR)) <0){							// 예외처리 
 		printf("fnd open error");
 		return 0;
 	}
@@ -390,52 +374,53 @@ int tactsw_get_with_timer(int t_second){
 	for(i = t_second; i>-1;i--){
 		for(j = 100; j>0;j--){
 			usleep(10000); //0.01 초 쉬기 
-            read(tactsw, &b, sizeof(b));
-				//입력값이 1~12 사이일 경우            
-            	if(1<=b && b<=12){
-            		switch (b){
+      read(tactsw, &b, sizeof(b));
+			//입력값이 1~12 사이일 경우            
+      if(1<=b && b<=12){
+        switch (b){
 					case 1:  selected_tact = 1 ; break;
 					case 2:  selected_tact = 2 ; break;
 					case 3:  selected_tact = 3 ; break;
 					case 4:  selected_tact = 4 ; break;
 					case 5:  selected_tact = 5 ; break;
-					case 12: 
-					{
+					case 12:{
 					//12눌렀을 때 이전에 1~5을 눌렀을 경우 
-					if(selected_tact==1 ||selected_tact==2||selected_tact==3||selected_tact==4||selected_tact==5){
-						printf("tactswitch 입력값: %d\n", selected_tact);
-						int turnOff = Time_Table[10];
-						fnd_num[0] = turnOff;
-    					fnd_num[1] = turnOff;
-    					fnd_num[2] = turnOff;
-    					fnd_num[3] = turnOff;
-						write(fnds, &fnd_num, sizeof(fnd_num));
-						close(tactsw);
-						close(fnds);
-						return selected_tact;
-					}
-					//12를 눌렀지만 이전에 1~5을 누르지 않았을 경우 
-					else {
-						printf("press 12 after  press 1 ~ 5");
+						if(selected_tact==1 ||selected_tact==2||selected_tact==3||selected_tact==4||selected_tact==5){
+							printf("tactswitch 입력값: %d\n", selected_tact);
+							int turnOff = Time_Table[10];
+							fnd_num[0] = turnOff;
+							fnd_num[1] = turnOff;
+							fnd_num[2] = turnOff;
+							fnd_num[3] = turnOff;
+							write(fnds, &fnd_num, sizeof(fnd_num));
+							close(tactsw);
+							close(fnds);
+							return selected_tact;
+						}
+						//12를 눌렀지만 이전에 1~5을 누르지 않았을 경우 
+						else {
+							printf("press 12 after  press 1 ~ 5");											// 구현할 수 있으면 해보기
 						// print("press 12 after  press 1 ~ 5"); usleep(5000000);
-					}
+						}
 					}
 					//6~11무시 
-					default: printf("press other key"); break; 	//print("press other key"); usleep(5000000);	             
-					}	
-				}
-		
-		}//1초 지남 = 0.01초*100번 
+					default: {
+						printf("press other key"); break;
+						//print("press other key"); usleep(5000000); 			// 구현할 수 있으면 해보기
+					}	             
+				}	
+			}
+		}
+		//1초 지남 = 0.01초*100번 
 		int s = i / 10;
 		int ss = i % 10;
 		fnd_num[0] = Time_Table[0];
-    	fnd_num[1] = Time_Table[0];
-    	fnd_num[2] = Time_Table[s];
-    	fnd_num[3] = Time_Table[ss];
+		fnd_num[1] = Time_Table[0];
+		fnd_num[2] = Time_Table[s];
+		fnd_num[3] = Time_Table[ss];
 		write(fnds, &fnd_num, sizeof(fnd_num));
-		printf("%d초\n",i);
-		
 	}
+	
 	//close 전 fnd 초기화 
 	int turnOff = Time_Table[10];
 	fnd_num[0] = turnOff;
@@ -469,39 +454,41 @@ int dipsw_get_with_timer(int t_second)
 	if((fnds = open(fnd,O_RDWR)) <0){
 		printf("fnd open error");
 		return 0;
-		}
-	
+	}
 	
 	int i,j;
+
 	//i=10~0초까지 
 	for(i = t_second; i>-1;i--){
 		for(j = 100; j>0;j--){
 			usleep(10000); //0.01 초 쉬기 
-            read(dipsw, &d, sizeof(d));
-            //입력값이 1~128 사이일 때 
-            	if(1<=d && d<=128){
-            		selected_dip = d;
-					//close 전 fnd 초기화 
-					int turnOff = Time_Table[10];
-					fnd_num[0] = turnOff;
-    				fnd_num[1] = turnOff;
-    				fnd_num[2] = turnOff;
-    				fnd_num[3] = turnOff;
-					write(fnds, &fnd_num, sizeof(fnd_num));
-					  
-					close(dipsw);
-					close(fnds);
-            		return selected_dip;
-				}
+      read(dipsw, &d, sizeof(d));
+
+      //입력값이 1~128 사이일 때 
+			if(1<=d && d<=128){
+        selected_dip = d;
+				//close 전 fnd 초기화 
+				int turnOff = Time_Table[10];
+				fnd_num[0] = turnOff;
+				fnd_num[1] = turnOff;
+				fnd_num[2] = turnOff;
+				fnd_num[3] = turnOff;
+
+				write(fnds, &fnd_num, sizeof(fnd_num));
+				close(dipsw);
+				close(fnds);
+				return selected_dip;
+			}
 		
-		}//1초 지남 = 0.01초*100번 
+		}
+		//1초 지남 = 0.01초*100번 
 		
 		int s = i / 10;
 		int ss = i % 10;
 		fnd_num[0] = Time_Table[0];
-    	fnd_num[1] = Time_Table[0];
-    	fnd_num[2] = Time_Table[s];
-    	fnd_num[3] = Time_Table[ss];
+		fnd_num[1] = Time_Table[0];
+		fnd_num[2] = Time_Table[s];
+		fnd_num[3] = Time_Table[ss];
 		write(fnds, &fnd_num, sizeof(fnd_num));
 		printf("%d초\n",i);
 		
@@ -509,18 +496,15 @@ int dipsw_get_with_timer(int t_second)
 	//close 전 fnd 초기화 
 	int turnOff = Time_Table[10];
 	fnd_num[0] = turnOff;
-    fnd_num[1] = turnOff;
-    fnd_num[2] = turnOff;
-    fnd_num[3] = turnOff;
+	fnd_num[1] = turnOff;
+	fnd_num[2] = turnOff;
+	fnd_num[3] = turnOff;
+
 	write(fnds, &fnd_num, sizeof(fnd_num));
-						
 	close(dipsw);
 	close(fnds);
 	return 0; //제한시간 끝	
 }
-
-
-
 
 // 게임 시작 함수
 void start(int* cards1, int* cards2){
@@ -529,8 +513,8 @@ void start(int* cards1, int* cards2){
   int user_score = 0;
   char round_clcd[32];
   char score_clcd[32];
-	
 
+	// 첫 판인 경우 Game Rule 출력
 	if (rule_count >= 1){
 		// Game Rule 설명
 		print("      GAME           START!     ");  usleep(1500000);
@@ -577,22 +561,18 @@ void start(int* cards1, int* cards2){
     
     // 베팅 결과 확인
     if(win_lose(user_answer, correct_answer)){           
-        user_score++;
-        print("     PLAYER           WIN!      "); usleep(2000000);
+			user_score++;
+			print("     PLAYER           WIN!      "); usleep(2000000);
     }
     else{
-        com_score++;
-        print("     PLAYER           LOSE      "); usleep(2000000);
+			com_score++;
+			print("     PLAYER           LOSE      "); usleep(2000000);
     }
     
-		
     // 스코어 공개와 동시에 CHIP LED 키기(5초로 설정되어 있음)
     sprintf(score_clcd, "PLAYER SCORE = %d COM  SCORE = %d ", user_score, com_score);
     print(score_clcd);
     led_on(user_score);
-
-    
-
 
     if(user_score>=7){
       print("   GAME CLEAR      PLAYER WIN   ");   usleep(2000000);
@@ -605,16 +585,14 @@ void start(int* cards1, int* cards2){
   }
 }
 
-
-
 int main(){
 	while(1){
-   		if(intro_key() != 0){
+		if(intro_key() != 0){
 			hint_count[0] = 1;
 			hint_count[1] = 1; 
-	    	prepare(usercards, comcards);
-	    	start(usercards, comcards);
-				print("    CONTINUE         GAME ?     ");	usleep(2000000);
+			prepare(usercards, comcards);
+			start(usercards, comcards);
+			print("    CONTINUE         GAME ?     ");	usleep(2000000);
 
 			if (intro(" DIP SWITCH  ON NEW GAME STARTS!") == 0){
 			print("      GAME            END.      ");   usleep(2000000);
