@@ -63,6 +63,9 @@ void led_on(int user_score);
 int intro_key();
 int intro(char p[]);
 
+// 게임 룰 불러와주는 함수
+void game_rule();
+
 // 전역 변수
 // 입출력장치
 int dipsw;
@@ -254,8 +257,7 @@ int betting_start(int com_card, int round, int* cards2){
 
 	// COM 카드 출력 
 	writeToDotDevice(com_card, 3000000);
-	
-	int user_answer, bet_answer = 0;
+	 
 	while(1){
 		print(" PLEASE BETTING  USE TACTSWITCH ");
 		
@@ -268,9 +270,11 @@ int betting_start(int com_card, int round, int* cards2){
 		//유저가 힌트를 요청했을 경우 
 		int user_hint = user_answer == 4 || user_answer == 5;
 
+		int user_rule = user_answer == 6;
+
 		//베팅값 입력시 베팅값 반환 
 		if(user_bet){
-			bet_answer = user_answer;
+			int bet_answer = user_answer;
 			return bet_answer; 
 		}
 
@@ -289,16 +293,16 @@ int betting_start(int com_card, int round, int* cards2){
 					hint(5,cards2, round);
 					hint_count[1]--;
 			}
-
 			//잔여 힌트 남아있지 않을 시 
 			else{
 				print(" HINT COUNT = 0  CAN'T USE HINT ");	usleep(2000000);
 			}
 		}
+		else if(user_rule){
+			game_rule();
+		}
 	}	
 }
-
-
 
 //카드 섞기 함수 start: 섞을 카드 시작 위치 
 void shuffle_card(int start, int* cards){
@@ -348,7 +352,7 @@ int win_lose(int user_answer, int correct_answer){
 }
 
 //입력된 시간(초) 동안 tactsw가 값을 읽고(0.01초 마다 read), 
-//1초마 다 fnd에 남은 제한시간을 출력 //반환값 0: 입력없음 1~5: 입력값 6~12: 무시 
+//1초마 다 fnd에 남은 제한시간을 출력 //반환값 0: 입력없음 1~6: 입력값 7~12: 무시 
 int tactsw_get_with_timer(int t_second){   
 	int selected_tact = 0;
 	unsigned char b=0;
@@ -383,9 +387,10 @@ int tactsw_get_with_timer(int t_second){
 					case 3:  selected_tact = 3 ; break;
 					case 4:  selected_tact = 4 ; break;
 					case 5:  selected_tact = 5 ; break;
+					case 6:  selected_tact = 6 ; break;
 					case 12:{
-					//12눌렀을 때 이전에 1~5을 눌렀을 경우 
-						if(selected_tact==1 ||selected_tact==2||selected_tact==3||selected_tact==4||selected_tact==5){
+					//12눌렀을 때 이전에 1~6을 눌렀을 경우 
+						if(selected_tact==1 ||selected_tact==2||selected_tact==3||selected_tact==4||selected_tact==5||selected_tact==6){
 							printf("tactswitch 입력값: %d\n", selected_tact);
 							int turnOff = Time_Table[10];
 							fnd_num[0] = turnOff;
@@ -397,7 +402,7 @@ int tactsw_get_with_timer(int t_second){
 							close(fnds);
 							return selected_tact;
 						}
-						//12를 눌렀지만 이전에 1~5을 누르지 않았을 경우 
+						//12를 눌렀지만 이전에 1~6을 누르지 않았을 경우 
 						else {
 							printf("press 12 after  press 1 ~ 5");											// 구현할 수 있으면 해보기
 						// print("press 12 after  press 1 ~ 5"); usleep(5000000);
@@ -506,6 +511,20 @@ int dipsw_get_with_timer(int t_second)
 	return 0; //제한시간 끝	
 }
 
+void game_rule(){
+	print("  INDIAN POKER     GAME  RULE   ");  usleep(1500000);
+	print("     ON THE       TACT  SWITCH  ");  usleep(1500000);
+	print("1ST, 2ND, 3RD IS BETTING BUTTON ");  usleep(1500000);
+	print("   1ST BUTTON     PLAYER = COM  ");  usleep(1500000);
+	print("   2ND BUTTON     PLAYER < COM  ");  usleep(1500000);
+	print("   3RD BUTTON     PLAYER > COM  ");  usleep(1500000);
+	print("  4TH, 5TH  IS    HINT  BUTTON  ");  usleep(1500000);
+	print("  THE  HINT IS    GIVEN  TWICE  ");	usleep(1500000);
+	print("   4TH BUTTON   SHOW UNUSED CARD");  usleep(1500000);
+	print("   5TH BUTTON    SHOW USED CARD ");  usleep(1500000);
+	print("  12TH  BUTTON       CHOOSE     ");  usleep(1500000);
+}
+
 // 게임 시작 함수
 void start(int* cards1, int* cards2){
   int ROUND = 13;
@@ -514,21 +533,12 @@ void start(int* cards1, int* cards2){
   char round_clcd[32];
   char score_clcd[32];
 
+	print("      GAME           START!     ");  usleep(1500000);
+
 	// 첫 판인 경우 Game Rule 출력
 	if (rule_count >= 1){
 		// Game Rule 설명
-		print("      GAME           START!     ");  usleep(1500000);
-		print("  INDIAN POKER     GAME  RULE   ");  usleep(1500000);
-		print("     ON THE       TACT  SWITCH  ");  usleep(1500000);
-		print("1ST, 2ND, 3RD IS BETTING BUTTON ");  usleep(1500000);
-		print("   1ST BUTTON     PLAYER = COM  ");  usleep(1500000);
-		print("   2ND BUTTON     PLAYER < COM  ");  usleep(1500000);
-		print("   3RD BUTTON     PLAYER > COM  ");  usleep(1500000);
-		print("  4TH, 5TH  IS    HINT  BUTTON  ");  usleep(1500000);
-		print("  THE  HINT IS    GIVEN  TWICE  ");	usleep(1500000);
-		print("   4TH BUTTON   SHOW UNUSED CARD");  usleep(1500000);
-		print("   5TH BUTTON    SHOW USED CARD ");  usleep(1500000);
-		print("  12TH  BUTTON       CHOOSE     ");  usleep(1500000);
+		game_rule();
 
 		rule_count = rule_count - 1;
 	}
