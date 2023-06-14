@@ -78,4 +78,4 @@ H-Smart4412 타겟 시스템을 이용한 기존 프로젝트 중 중복되지 �
  - [프로젝트 중간 발표 1](https://github.com/JoHyeonGyeong/iot_indianPoker/blob/main/Docs/Indian%20Poker_02_20230518.pdf) - 알고리즘과 장치 제어 함수 구상
  - [프로젝트 중간 발표 2](https://github.com/JoHyeonGyeong/iot_indianPoker/blob/main/Docs/Indian%20Poker_03_20230525.pdf) - 장치 테스트 및 예시 코드
  - [프로젝트 중간 발표 3](https://github.com/JoHyeonGyeong/iot_indianPoker/blob/main/Docs/Indian%20Poker_04_20230601.pdf) - 구현 완료, 힌트 버튼 구현 예정
- - 프로젝트 최종 발표 : 23. 06. 15 예정
+ - [프로젝트 최종 발표](https://github.com/JoHyeonGyeong/iot_indianPoker/blob/main/Docs/Indian%20Poker_05_20230615.pdf) - 최종 구현(힌트, 게임 규칙 버튼, 게임 재시작 기능 추가)
